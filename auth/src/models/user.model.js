@@ -1,10 +1,10 @@
 const mongoose = require('mongoose')
 
 const addressSchema = new mongoose.Schema({
-    stree: String,
+    street: String,
     city:String,
     state:String,
-    zipCode:String,
+    zip:String,
     country:String,
     isDefault:{
         type:Boolean,

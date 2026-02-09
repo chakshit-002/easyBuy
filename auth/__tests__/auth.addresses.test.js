@@ -60,9 +60,9 @@ describe('User addresses API', () => {
     });
 
     describe('POST /api/auth/users/me/addresses', () => {
-        it('validates pincode and phone and returns 400 on invalid input', async () => {
+        it('validates pincode  and returns 400 on invalid input', async () => {
             const { cookies } = await seedUserAndLogin({ username: 'adder1', email: 'adder1@example.com' });
-
+            // and phone
             const res = await request(app)
                 .post('/api/auth/users/me/addresses')
                 .set('Cookie', cookies)

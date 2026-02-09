@@ -38,6 +38,10 @@ const registerUserValidations = [
         .notEmpty()
         .withMessage("Last name is required"),
 
+    body("role")
+        .optional()
+        .isIn(['user', 'seller'])
+        .withMessage("Role must be either 'user' or 'seller' "),
     responseWithValidationErrors
 
 ]
@@ -48,7 +52,7 @@ const loginUserValidations = [
         .optional()
         .isEmail()
         .withMessage("Invalid email address"),
-    
+
     body("username")
         .optional()
         .isString()
@@ -58,19 +62,61 @@ const loginUserValidations = [
         .isLength({ min: 6 })
         .withMessage("Password must be atleast of 6 characters long"),
 
-    (req,res,next) =>{
-        if(!req.body.email && ! req.body.username){
+    (req, res, next) => {
+        if (!req.body.email && !req.body.username) {
             return res.status(400).json({
-                errors:[{
+                errors: [{
                     msg: "Either email or Username is required",
                 }]
             })
         }
-        responseWithValidationErrors(req,res,next);
+        responseWithValidationErrors(req, res, next);
     }
 ]
 
+const addUserAddressValidations = [
+    body('street')
+        .isString()
+        .withMessage("Street must be a string")
+        .notEmpty()
+        .withMessage("Street is required"),
+
+    body('city')
+        .isString()
+        .withMessage("city must be a string")
+        .notEmpty()
+        .withMessage("city is required"),
+
+    body('state')
+        .isString()
+        .withMessage("state must be a string")
+        .notEmpty()
+        .withMessage("state is required"),
+
+    body('pincode')
+        .isString()
+        .withMessage("pincode must be a string")
+        .notEmpty()
+        .withMessage("pincode is required")
+        .bail()
+        .matches(/^\d{4,}$/)
+        .withMessage('Pincode must be at least 4 digits'),
+        
+    body("country")
+        .isString()
+        .withMessage("country must be a string")
+        .notEmpty()
+        .withMessage("country is required"),
+
+    body("isDefault")
+        .optional()
+        .isBoolean()
+        .withMessage("isDefault must  be a boolean"),
+
+    responseWithValidationErrors
+]
 module.exports = {
     registerUserValidations,
-    loginUserValidations
+    loginUserValidations,
+    addUserAddressValidations
 }
