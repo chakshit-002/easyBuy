@@ -31,6 +31,9 @@ const productSchema = new mongoose.Schema({
     }]
 })
 
+productSchema.index({title:'text', description:'text'})
+//text-index creating ->  query ko fast kr deta hai aur exact pura data daalne ki jrurt nahi pdti 
+
 const productModel = mongoose.model("product",productSchema);
 
 module.exports = productModel;
