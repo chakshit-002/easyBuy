@@ -1,3 +1,6 @@
+// require('../setup/env')
+require('../setup/env');      // Environment variables ke liye
+require('../setup/mongodb');
 const request = require('supertest');
 const app = require('../../src/app');
 const { getAuthCookie } = require('../setup/auth');
@@ -45,13 +48,14 @@ describe('POST /api/orders — Create order from current cart', () => {
         expect(typeof order.totalPrice.amount).toBe('number');
         expect([ 'USD', 'INR' ]).toContain(order.totalPrice.currency);
 
+        console.log(order.shippingAddress)
 
         // Shipping address persisted
         expect(order.shippingAddress).toMatchObject({
             street: sampleAddress.street,
             city: sampleAddress.city,
             state: sampleAddress.state,
-            zip: sampleAddress.pincode,
+            pincode: sampleAddress.pincode,
             country: sampleAddress.country,
         });
 

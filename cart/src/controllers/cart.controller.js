@@ -8,7 +8,7 @@ async function getCart(req,res){
 
     if(!cart){
         cart = new cartModel({
-            user:user._id,
+            user:user.id,
             items:[]
         })
         await cart.save();

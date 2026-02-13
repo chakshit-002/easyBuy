@@ -1,0 +1,34 @@
+ .bail() ki Working
+By default, express-validator saare rules check karta hai, chahe pehla rule fail hi kyun na ho gaya ho.
+ 
+ 
+ 
+ body("role")
+        .optional()
+        .isIn(['user', 'seller'])
+        .withMessage("Role must be either 'user' or 'seller' "),
+
+
+isIn() ka use kyun kiya?
+body("role").isIn(['user', 'seller'])
+
+isIn ka matlab hai Whitelist validation.
+
+Aapne schema mein enum lagaya hai, par validation layer par ise lagane se database tak query jaati hi nahi hai.
+
+Agar koi user role mein "admin" ya "superman" bhejega, toh isIn use block kar dega kyunki wo di gayi array (['user', 'seller']) mein nahi hai.
+
+Professional Tip: Yeh user permissions aur security ke liye bahut zaroori hai.
+
+
+
+body('pincode').bail().matches(...) 
+-> .bail() ka matlab hai "agar pincode string nahi hai, toh aage ke Regex check mat karo". Isse server ki mehnat bachti hai.
+
+
+
+.optional(): Iska matlab hai ki agar user ne wo field nahi bheji toh koi baat nahi (valid hai), lekin agar bheji hai toh wo rules follow karni chahiye (jaise role ya isDefault).
+
+.notEmpty(): Yeh ensure karta hai ki field sirf bheji hi na jaye, balki usme kuch likha bhi ho (khali string "" allow nahi hogi).
+
+.isBoolean(): Address save karte waqt sirf true ya false hi accept karega, "yes/no" nahi.

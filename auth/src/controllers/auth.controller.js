@@ -34,7 +34,7 @@ async function registerUser(req, res) {
         },
         role: role || 'user'
     })
-    // ab agar user pr find ya finone lagae toh password nahi aega kyu ki usermodel mei select false krdiey hai password pr 
+    // ab agar user pr find ya findOne lagae toh password nahi aega kyu ki usermodel mei select false krdiey hai password pr 
 
     const token = jwt.sign({
         id: user._id,

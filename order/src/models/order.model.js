@@ -4,10 +4,10 @@ const addressSchema = new  mongoose.Schema({
     street:String,
     city:String,
     state:String,
-    zip:String,
+    pincode:String,
     country:String,
-    isDefault:{type:Boolean,default:false}
 })
+// isDefault:{type:Boolean,default:false}
 const orderSchema = new mongoose.Schema({
     user:{
         type:mongoose.Schema.Types.ObjectId,
@@ -52,7 +52,10 @@ const orderSchema = new mongoose.Schema({
             enum:["USD","INR"]
         }
     },
-    shippingAddress:addressSchema
+    shippingAddress:{
+        type:addressSchema,
+        required: true
+    }
 },{
     timestamps:true
 });
