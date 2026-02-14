@@ -1,3 +1,5 @@
+require('../setup/env');      // Environment variables ke liye
+require('../setup/mongodb');
 const request = require('supertest');
 const app = require('../../src/app');
 const { getAuthCookie } = require('../setup/auth');
@@ -5,7 +7,7 @@ const orderModel = require('../../src/models/order.model');
 
 
 describe('GET /api/orders/:id — Get order by id with timeline and payment summary', () => {
-    const orderId = '68c13b2721c0d91f44ca3ead'; // sample ObjectId-like
+    const orderId = '698ef973433664f7fabfbe4b'; // sample ObjectId-like
 
     it('returns 200 with order details, timeline, and payment summary', async () => {
 

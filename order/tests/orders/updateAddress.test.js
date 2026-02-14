@@ -1,3 +1,6 @@
+require('../setup/env');      // Environment variables ke liye
+require('../setup/mongodb');
+
 const request = require('supertest');
 const app = require('../../src/app');
 const { getAuthCookie } = require('../setup/auth');
@@ -5,7 +8,7 @@ const orderModel = require('../../src/models/order.model');
 
 
 describe('PATCH /api/orders/:id/address — Update delivery address prior to payment capture', () => {
-    const orderId = '507f1f77bcf86cd799439012';
+    const orderId = '698ef973433664f7fabfbe4b';
 
     const newAddress = {
         street: '456 Second St',
@@ -19,7 +22,7 @@ describe('PATCH /api/orders/:id/address — Update delivery address prior to pay
 
         const order = await orderModel.create({
             _id: orderId,
-            user: '68bc6369c17579622cbdd9fe',
+            user: '696fc6f1be969a0dd6357020',
             items: [],
             status: 'PENDING',
             totalPrice: {
@@ -51,7 +54,7 @@ describe('PATCH /api/orders/:id/address — Update delivery address prior to pay
             street: newAddress.street,
             city: newAddress.city,
             state: newAddress.state,
-            zip: newAddress.pincode,
+            pincode: newAddress.pincode,
             country: newAddress.country,
         });
     });
@@ -60,7 +63,7 @@ describe('PATCH /api/orders/:id/address — Update delivery address prior to pay
 
         const order = await orderModel.create({
             _id: orderId,
-            user: '68bc6369c17579622cbdd9fe',
+            user: '696fc6f1be969a0dd6357020',
             items: [],
             status: 'SHIPPED',
             totalPrice: {
@@ -89,7 +92,7 @@ describe('PATCH /api/orders/:id/address — Update delivery address prior to pay
     it('returns 400 when address is invalid', async () => {
         const order = await orderModel.create({
             _id: orderId,
-            user: '68bc6369c17579622cbdd9fe',
+            user: '696fc6f1be969a0dd6357020',
             items: [],
             status: 'PENDING',
             totalPrice: {

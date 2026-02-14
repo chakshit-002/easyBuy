@@ -1,3 +1,5 @@
+require('../setup/env');      // Environment variables ke liye
+require('../setup/mongodb');
 const request = require('supertest');
 const app = require('../../src/app');
 const { getAuthCookie } = require('../setup/auth');

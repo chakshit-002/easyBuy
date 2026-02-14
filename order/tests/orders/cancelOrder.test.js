@@ -1,3 +1,5 @@
+require('../setup/env');      // Environment variables ke liye
+require('../setup/mongodb');
 const request = require('supertest');
 const app = require('../../src/app');
 const { getAuthCookie } = require('../setup/auth');
@@ -5,7 +7,7 @@ const orderModel = require('../../src/models/order.model');
 
 
 describe('POST /api/orders/:id/cancel — Buyer-initiated cancel while rules apply', () => {
-    const orderId = '507f1f77bcf86cd799439012';
+    const orderId = '698ef973433664f7fabfbe4b';
 
     beforeEach(async () => {
         await orderModel.deleteMany({});
@@ -15,7 +17,7 @@ describe('POST /api/orders/:id/cancel — Buyer-initiated cancel while rules app
 
         const order = new orderModel({
             _id: orderId,
-            user: '68bc6369c17579622cbdd9fe', // ensure this matches auth user
+            user: '696fc6f1be969a0dd6357020', // ensure this matches auth user
             status: 'PENDING',
             items: [
                 {
@@ -53,7 +55,7 @@ describe('POST /api/orders/:id/cancel — Buyer-initiated cancel while rules app
 
         const order = new orderModel({
             _id: orderId,
-            user: '68bc6369c17579622cbdd9fe', // ensure this matches auth user
+            user: '696fc6f1be969a0dd6357020', // ensure this matches auth user
             status: 'SHIPPED',
             items: [
                 {
@@ -87,7 +89,7 @@ describe('POST /api/orders/:id/cancel — Buyer-initiated cancel while rules app
 
         const order = new orderModel({
             _id: orderId,
-            user: '68bc6369c17579622cbdd9fe',
+            user: '696fc6f1be969a0dd6357020',
             items: [],
             status: 'PENDING',
             totalPrice: {
