@@ -37,7 +37,7 @@ if (process.env.NODE_ENV === 'test') {
             this.expires.delete(key);
             return existed;
         }
-        on() { /* no-op in tests */ }
+        on() { /* no-op in tests crash hone se bachaega  */ }
         quit() { return Promise.resolve(); }
     }
     module.exports = new FakeRedis();

@@ -136,6 +136,7 @@ async function logoutUser(req,res){
 
     if(token){
         await redis.set(`blacklist:${token}`,'true','EX',24*60*60); //token ko redis mei blacklist krdege aur uska expiry time 1 day rkhdege taki vo token valid na rhe logout krne ke baad
+        // JWT tokens ko "cancel" karna mushkil hota hai kyunki wo "stateless" hote hain. Iska hal hai Blacklisting
     }
 
     res.clearCookie('token',{
