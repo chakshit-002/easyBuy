@@ -1,4 +1,3 @@
-require('dotenv').config();
 const jwt = require('jsonwebtoken');
 
 // Returns an array suitable for Supertest's .set('Cookie', ...)

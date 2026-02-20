@@ -2,6 +2,8 @@ const userModel = require('../models/user.model')
 const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
 const redis = require('../db/redis')
+const {publishToQueue} = require('../broker/broker')
+
 
 async function registerUser(req, res) {
     try{
@@ -35,6 +37,14 @@ async function registerUser(req, res) {
         role: role || 'user'
     })
     // ab agar user pr find ya findOne lagae toh password nahi aega kyu ki usermodel mei select false krdiey hai password pr 
+
+    //user created and send(publish) to rabbit mq
+    await publishToQueue('AUTH_NOTIFICATION.USER_CREATED',{
+        id: user._id,
+        username:user.username,
+        email:user.email,
+        fullName:user.fullName
+    })
 
     const token = jwt.sign({
         id: user._id,
@@ -179,7 +189,7 @@ async function addUserAddress(req,res){
                 isDefault
             }
         }
-    },{new:true});
+    },{new:true}); //updated version show krna hai new:true ka mltb
 
     if(!user){
         return res.status(404).json({
@@ -213,7 +223,7 @@ async function deleteUserAddress(req,res){
         $pull:{
             addresses:{_id:addressId}
         }
-    },{new:true});
+    },{new:true});//updated version show krna hai new:true ka mltb
 
     if(!user){
         return res.status(404).json({
@@ -221,7 +231,7 @@ async function deleteUserAddress(req,res){
         })
     }
 
-    const addressExists = user.addresses.some(addr => addr._id.toString() === addressId);
+    const addressExists = user.addresses.some(addr => addr._id.toString() === addressId);//some return true condition match hote hi otherwise false
 
     if(addressExists){
         return res.status(500).json({
@@ -235,3 +245,5 @@ async function deleteUserAddress(req,res){
     })
 }
 module.exports = { registerUser, loginUser,getCurrentUser , logoutUser, getUserAddresses, addUserAddress, deleteUserAddress}
+
+

@@ -2,13 +2,13 @@ const request = require('supertest');
 const bcrypt = require('bcryptjs');
 const mongoose = require('mongoose');
 const app = require('../src/app');
-const connectDB = require('../src/db/db');
+// const connectDB = require('../src/db/db');
 const userModel = require('../src/models/user.model');
 
 describe('User addresses API', () => {
-    beforeAll(async () => {
-        await connectDB();
-    });
+    // beforeAll(async () => {
+    //     await connectDB();
+    // });
 
     async function seedUserAndLogin({ username = 'addr_user', email = 'addr@example.com', password = 'Secret123!' } = {}) {
         const hash = await bcrypt.hash(password, 10);
@@ -32,6 +32,7 @@ describe('User addresses API', () => {
         it('requires authentication (401 without cookie)', async () => {
             const res = await request(app).get('/api/auth/users/me/addresses');
             expect(res.status).toBe(401);
+            // Ye check karta hai ki agar koi bina login kiye (bina cookie ke) addresses dekhne ki koshish kare, toh use entry na mile.
         });
 
         it('returns a list of addresses and indicates a default', async () => {

@@ -1,13 +1,13 @@
 const request = require('supertest');
 const app = require('../src/app');
-const connectDB = require('../src/db/db');
+// const connectDB = require('../src/db/db');
 const userModel = require('../src/models/user.model');
 const bcrypt = require('bcryptjs');
 
 describe('POST /api/auth/login', () => {
-    beforeAll(async () => {
-        await connectDB();
-    });
+    // beforeAll(async () => {
+    //     await connectDB();
+    // });
 
     it('logs in with correct credentials and returns 200 with user and sets cookie', async () => {
         // Seed a user

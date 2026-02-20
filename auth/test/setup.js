@@ -26,3 +26,9 @@ afterAll(async () => {
     await mongoose.connection.close();
     if (mongo) await mongo.stop();
 });
+
+// beforeAll: Server start karo + Connect karo.
+
+// afterEach: Data saaf karo.
+
+// afterAll: Connecton band karo + Server stop karo.

@@ -2,13 +2,13 @@ const request = require('supertest');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const app = require('../src/app');
-const connectDB = require('../src/db/db');
+// const connectDB = require('../src/db/db');
 const userModel = require('../src/models/user.model');
 
 describe('GET /api/auth/me', () => {
-    beforeAll(async () => {
-        await connectDB();
-    });
+    // beforeAll(async () => {
+    //     await connectDB();
+    // });
 
     it('returns 401 when no auth cookie is provided', async () => {
         const res = await request(app).get('/api/auth/me');
