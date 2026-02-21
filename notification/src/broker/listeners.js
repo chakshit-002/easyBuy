@@ -5,21 +5,32 @@ module.exports = function () {
     subscribeToQueue('AUTH_NOTIFICATION.USER_CREATED', async (data) => {
         // console.log("received data from queue", data)
 
-        const emailTemplate = 
-        `
+        const emailTemplate =
+            `
         <h1>Welcome to Our Services!</h1>
-        <p>Dear ${data.fullName.firstName + " "+ (data.fullName.lastName ||" ") }</p>
+        <p>Dear ${data.fullName.firstName + " " + (data.fullName.lastName || " ")}</p>
         <p>Thank you for registering with us.</p>
         <p>Best regards, <br/> The Team</p>
 
         `
 
-        await sendEmail(data.email, "Welcome to Our Service ","Thank you for registering with us!",emailTemplate)
+        await sendEmail(data.email, "Welcome to Our Service ", "Thank you for registering with us!", emailTemplate)
     })
 
-    subscribeToQueue("PAYMENT_NOTIFICATION.PAYMENT_COMPLETED",async(data)=>{
-        const emailTemplate = 
-        `
+    subscribeToQueue("PAYMENT_NOTIFICATION.PAYMENT_INITIATED", async (data) => {
+        const emailHTMLTemplate = `
+        <h1>Payment Initiated</h1>
+        <p>Dear ${data.username},</p>
+        <p>Your payment of ${data.currency} ${data.amount} for the order ID: ${data.orderId} has been initiated.</p>
+        <p>We will notify you once the payment is completed.</p>
+        <p>Best regards,<br/>The Team</p>
+        `;
+        await sendEmail(data.email, "Payment Initiated", "Your payment is being processed", emailHTMLTemplate);
+    })
+
+    subscribeToQueue("PAYMENT_NOTIFICATION.PAYMENT_COMPLETED", async (data) => {
+        const emailTemplate =
+            `
         <h1>Payment Successful!</h1>
         <p>Dear ${data.username}</p>
         <p>We have received  your payment of ${data.currency} ${data.amount} for the  orderId - ${data.orderId}.</p>
@@ -27,7 +38,7 @@ module.exports = function () {
         <p>Best regards, <br/> The Team</p>
         `;
 
-         await sendEmail(data.email, "Payment  Successful","We have received your payment",emailTemplate)
+        await sendEmail(data.email, "Payment  Successful", "We have received your payment", emailTemplate)
     })
 
 

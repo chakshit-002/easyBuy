@@ -1,6 +1,7 @@
 const productModel = require("../models/product.model")
 const { uploadImage } = require('../services/imagekit.service')
 const mongoose = require('mongoose');
+const {publishToQueue} = require('../broker/broker')
 
 //accepts multipart/form-data with fields...
 async function createProduct(req, res) {
@@ -34,6 +35,14 @@ async function createProduct(req, res) {
             seller,
             images
         });
+
+        await publishToQueue("PRODUCT_SELLER_DASHBOARD.PRODUCT_CREATED",product)
+        await publishToQueue("PRODUCT_NOTIFICATION.PRODUCT_CREATED",{
+            productId: product._id, 
+            sellerId: seller,
+            email:req.user.email,
+            username: req.user.username
+        })
         return res.status(201).json({
             message: "product created",
             data: product,
@@ -123,7 +132,7 @@ async  function updateProduct(req,res){
 
     for(const key of Object.keys(req.body)){
         if(allowedUpdates.includes(key)){
-            if(key === 'price' && typeof req.body.price === 'object'){
+            if(key === 'price' && typeof req.body.price === 'object'){ // puri value overwrite na ho isliye object hai toh ek-ek krke update krega values
                 if(req.body.price.amount !== undefined){
                     product.price.amount = Number(req.body.price.amount);
                 }

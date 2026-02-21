@@ -2,185 +2,198 @@ const userModel = require('../models/user.model')
 const bcrypt = require("bcryptjs");
 const jwt = require('jsonwebtoken');
 const redis = require('../db/redis')
-const {publishToQueue} = require('../broker/broker')
+const { publishToQueue } = require('../broker/broker')
 
 
 async function registerUser(req, res) {
-    try{
-    const { username, email, password, fullName: { firstName, lastName },role } = req.body
+    try {
+        const { username, email, password, fullName: { firstName, lastName }, role } = req.body
 
-    //validation krna pdega kyu ki email ka formate , name sahi hai ya nahi express validator ka use krege -> validator.middleware.js
+        //validation krna pdega kyu ki email ka formate , name sahi hai ya nahi express validator ka use krege -> validator.middleware.js
 
-    const isUserAlreadyExists = await userModel.findOne({
-        $or: [
-            { username },
-            { email }
-        ]
-    }); //query hai yh ek -> ya username ya email dono mei se ek ya dono se jisshe bhi user mil jaee toh hamhe mil jaega 
+        const isUserAlreadyExists = await userModel.findOne({
+            $or: [
+                { username },
+                { email }
+            ]
+        }); //query hai yh ek -> ya username ya email dono mei se ek ya dono se jisshe bhi user mil jaee toh hamhe mil jaega 
 
-    if (isUserAlreadyExists) {
-        return res.status(409).json({
-            message: "Username or email already exists"
+        if (isUserAlreadyExists) {
+            return res.status(409).json({
+                message: "Username or email already exists"
+            })
+        }
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const user = await userModel.create({
+            username,
+            email,
+            password: hashedPassword,
+            fullName: {
+                firstName,
+                lastName
+            },
+            role: role || 'user'
+        })
+        // ab agar user pr find ya findOne lagae toh password nahi aega kyu ki usermodel mei select false krdiey hai password pr 
+
+        //user created and send(publish) to rabbit mq
+        // await publishToQueue('AUTH_NOTIFICATION.USER_CREATED', {
+        //     id: user._id,
+        //     username: user.username,
+        //     email: user.email,
+        //     fullName: user.fullName
+        // })
+
+        // await publishToQueue("AUTH_SELLER_DASHBOARD.USER_CREATED", user);
+
+        await Promise.all([
+            publishToQueue('AUTH_NOTIFICATION.USER_CREATED', {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                fullName: user.fullName
+            }),
+            publishToQueue("AUTH_SELLER_DASHBOARD.USER_CREATED", user)
+
+        ]);
+        
+        const token = jwt.sign({
+            id: user._id,
+            username: user.username,
+            role: user.role,
+            email: user.email
+        }, process.env.JWT_SECRET,
+            { expiresIn: '1d' }
+        )
+
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: true, // client side js hoti hai vo cookies ko access nahi kr paegi only server hi kr skta hai .....
+            maxAge: 24 * 60 * 60 * 1000 //1 day
+        })
+
+        res.status(201).json({
+            message: "User registered successfully",
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                fullName: user.fullName,
+                role: user.role,
+                addresses: user.addresses
+            }
+        })
+    } catch (error) {
+        console.error("Error in register  User ", error);
+        res.status(500).json({
+            message: "Internal Server Error"
         })
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = await userModel.create({
-        username,
-        email,
-        password: hashedPassword,
-        fullName: {
-            firstName,
-            lastName
-        },
-        role: role || 'user'
-    })
-    // ab agar user pr find ya findOne lagae toh password nahi aega kyu ki usermodel mei select false krdiey hai password pr 
-
-    //user created and send(publish) to rabbit mq
-    await publishToQueue('AUTH_NOTIFICATION.USER_CREATED',{
-        id: user._id,
-        username:user.username,
-        email:user.email,
-        fullName:user.fullName
-    })
-
-    const token = jwt.sign({
-        id: user._id,
-        username: user.username,
-        role: user.role,
-        email: user.email
-    }, process.env.JWT_SECRET,
-        { expiresIn: '1d' }
-    )
-    
-    res.cookie('token',token,{
-        httpOnly:true,
-        secure: true, // client side js hoti hai vo cookies ko access nahi kr paegi only server hi kr skta hai .....
-        maxAge : 24 * 60 * 60 * 1000 //1 day
-    })
-
-     res.status(201).json({
-        message:"User registered successfully",
-        user:{
-            id:user._id,
-            username:user.username,
-            email:user.email,
-            fullName:user.fullName,
-            role:user.role,
-            addresses:user.addresses
-        }
-    })
-}catch(error){
-    console.error("Error in register  User ",error);
-    res.status(500).json({
-        message:"Internal Server Error"
-    })
 }
 
-}
+async function loginUser(req, res) {
+    try {
+        const { username, email, password } = req.body;
 
-async function loginUser(req,res){
-    try{
-        const {username,email,password} = req.body;
+        const user = await userModel.findOne({ $or: [{ username }, { email }] }).select('+password'); //login krte time password bhi chahiye hota hai compare krne ke liye toh select +password krna pdega kyu ki usermodel mei select false krdiey hai password pr;
 
-        const user = await userModel.findOne({$or:[{username},{email}]}).select('+password'); //login krte time password bhi chahiye hota hai compare krne ke liye toh select +password krna pdega kyu ki usermodel mei select false krdiey hai password pr;
-
-        if(!user){
+        if (!user) {
             return res.status(401).json({
-                message:"Invalid credentials"
+                message: "Invalid credentials"
             });
         }
 
-        const isPasswordMatch = await bcrypt.compare(password,user.password || '');
+        const isPasswordMatch = await bcrypt.compare(password, user.password || '');
 
-        if(!isPasswordMatch){
+        if (!isPasswordMatch) {
             return res.status(401).json({
-                message:"Invalid credentials"
+                message: "Invalid credentials"
             });
         }
 
         const token = jwt.sign({
             id: user._id,
-            username:user.username,
-            email:user.email,
-            role:user.role
-        },process.env.JWT_SECRET,{expiresIn: '1d'});
+            username: user.username,
+            email: user.email,
+            role: user.role
+        }, process.env.JWT_SECRET, { expiresIn: '1d' });
 
-        res.cookie('token',token,{
-            httpOnly:true,
-            secure:true,
-            maxAge: 24*60*60*1000,
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: true,
+            maxAge: 24 * 60 * 60 * 1000,
         });
 
         return res.status(200).json({
-            message:"Login Successfully",
-            user:{
-                id:user._id,
-                username:user.username,
-                email:user.email,
-                fullName:user.fullName,
-                role:user.role,
-                addresses:user.addresses
+            message: "Login Successfully",
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email,
+                fullName: user.fullName,
+                role: user.role,
+                addresses: user.addresses
             }
         });
 
-    }catch(err){
-        console.error("Error  in Login User",err);
+    } catch (err) {
+        console.error("Error  in Login User", err);
         res.status(500).json({
-            message:"Internal Server Error"
+            message: "Internal Server Error"
         })
     }
 }
 
-async function getCurrentUser(req,res){
+async function getCurrentUser(req, res) {
     return res.status(200).json({
-        message:"Current user fetched successfully",
-        user:req.user
+        message: "Current user fetched successfully",
+        user: req.user
     })
 }
 
-async function logoutUser(req,res){
+async function logoutUser(req, res) {
     const token = req.cookies.token;
 
-    if(token){
-        await redis.set(`blacklist:${token}`,'true','EX',24*60*60); //token ko redis mei blacklist krdege aur uska expiry time 1 day rkhdege taki vo token valid na rhe logout krne ke baad
+    if (token) {
+        await redis.set(`blacklist:${token}`, 'true', 'EX', 24 * 60 * 60); //token ko redis mei blacklist krdege aur uska expiry time 1 day rkhdege taki vo token valid na rhe logout krne ke baad
         // JWT tokens ko "cancel" karna mushkil hota hai kyunki wo "stateless" hote hain. Iska hal hai Blacklisting
     }
 
-    res.clearCookie('token',{
-        httpOnly:true,
-        secure:true,
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: true,
     })
     return res.status(200).json({
-        message:"Logged Out Successfully"
+        message: "Logged Out Successfully"
     })
 }
 
 
-async function getUserAddresses(req,res){
+async function getUserAddresses(req, res) {
     const id = req.user.id;
 
     const user = await userModel.findById(id).select('addresses');
-    if(!user){
+    if (!user) {
         return res.status(404).json({
-            message:"User not found"
+            message: "User not found"
         })
     }
     return res.status(200).json({
-        message:"User addresses fetched successfully",
-        addresses:user.addresses
+        message: "User addresses fetched successfully",
+        addresses: user.addresses
     })
 }
 
-async function addUserAddress(req,res){
+async function addUserAddress(req, res) {
     const id = req.user.id;
-    const {street , city , state, pincode,  country, isDefault} = req.body;
+    const { street, city, state, pincode, country, isDefault } = req.body;
 
-    const user = await userModel.findOneAndUpdate({_id:id},{
-        $push:{
-            addresses:{
+    const user = await userModel.findOneAndUpdate({ _id: id }, {
+        $push: {
+            addresses: {
                 street,
                 city,
                 state,
@@ -189,61 +202,61 @@ async function addUserAddress(req,res){
                 isDefault
             }
         }
-    },{new:true}); //updated version show krna hai new:true ka mltb
+    }, { new: true }); //updated version show krna hai new:true ka mltb
 
-    if(!user){
+    if (!user) {
         return res.status(404).json({
-            message:"User not found"
+            message: "User not found"
         })
     }
 
     return res.status(201).json({
-        message:"Address added successfully",
-        address: user.addresses[user.addresses.length -1] //jo address add hua hai vo last mei add hoga toh usko return krdege
-    }) 
+        message: "Address added successfully",
+        address: user.addresses[user.addresses.length - 1] //jo address add hua hai vo last mei add hoga toh usko return krdege
+    })
 }
 
-async function deleteUserAddress(req,res){
+async function deleteUserAddress(req, res) {
     const id = req.user.id;
-    const{addressId}= req.params;
+    const { addressId } = req.params;
 
 
     const isAddressExists = await userModel.findOne({
-        _id:id,
-        'addresses._id':addressId
+        _id: id,
+        'addresses._id': addressId
     })
 
-    if(!isAddressExists){
+    if (!isAddressExists) {
         return res.status(404).json({
-            message:"Address not found"
+            message: "Address not found"
         })
     }
 
-    const user = await userModel.findOneAndUpdate({_id:id},{
-        $pull:{
-            addresses:{_id:addressId}
+    const user = await userModel.findOneAndUpdate({ _id: id }, {
+        $pull: {
+            addresses: { _id: addressId }
         }
-    },{new:true});//updated version show krna hai new:true ka mltb
+    }, { new: true });//updated version show krna hai new:true ka mltb
 
-    if(!user){
+    if (!user) {
         return res.status(404).json({
-            message:"User  not found"
+            message: "User  not found"
         })
     }
 
     const addressExists = user.addresses.some(addr => addr._id.toString() === addressId);//some return true condition match hote hi otherwise false
 
-    if(addressExists){
+    if (addressExists) {
         return res.status(500).json({
-            message:"Failed to delete address"
+            message: "Failed to delete address"
         })
     }
 
     return res.status(200).json({
-        message:"Address deleted successfully",
+        message: "Address deleted successfully",
         addresses: user.addresses
     })
 }
-module.exports = { registerUser, loginUser,getCurrentUser , logoutUser, getUserAddresses, addUserAddress, deleteUserAddress}
+module.exports = { registerUser, loginUser, getCurrentUser, logoutUser, getUserAddresses, addUserAddress, deleteUserAddress }
 
 
