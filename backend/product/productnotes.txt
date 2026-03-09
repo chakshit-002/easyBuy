@@ -1,0 +1,24 @@
+
+
+https://gemini.google.com/share/83c64720b168
+
+
+searching ke liye ->
+
+productSchema.index({title:'text', description:'text'})
+
+Tokenization: Wo har sentence ko tod kar alag-alag words (tokens) bana deta hai.
+
+Stop Words Removal: Wo "is", "the", "a", "and" jaise common words ko index se nikaal deta hai (kyunki inka search mein koi khaas matlab nahi hota).
+
+Stemming: Wo words ko unke root form mein le aata hai. Jaise agar description mein "Running" likha hai, toh index mein "Run" store hoga
+
+
+mongoose.Types.ObjectId.isValid(id) kya check karta hai?
+Ye function ye nahi check karta ki "kya ye Object hai ya String?"
+Ye ye check karta hai ki: "Kya ye String ek valid 24-character Hexadecimal format mein hai?"
+
+
+
+Ye ?? operator JavaScript ka ek bahut hi pyara feature hai jise "Nullish Coalescing Operator" kehte hain.
+Seedhi bhasha mein iska matlab hai: "Agar left side wali value null ya undefined hai, tabhi right side wali default value uthao."
