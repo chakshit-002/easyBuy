@@ -65,22 +65,45 @@ export const deleteAddress = createAsyncThunk('auth/deleteAddress', async (addre
 const authSlice = createSlice({
     name: 'auth',
     initialState: {
-        user: null,
+        user: JSON.parse(localStorage.getItem('user')) || null,
         loading: false,
         error: null,
-        isAuthenticated: false
+        isAuthenticated: !!localStorage.getItem('user'),
     },
     extraReducers: (builder) => {
         builder
+            .addCase(registerUser.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(registerUser.fulfilled, (state, action) => {
+                state.loading = false;
+                state.isAuthenticated = true; // Taaki navigate trigger ho jaye
+
+                state.error = null;
+                state.user = action.payload.user || action.payload;
+
+                localStorage.setItem('user', JSON.stringify(state.user));
+
+            })
+            .addCase(registerUser.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
             .addCase(loginUser.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(loginUser.fulfilled, (state, action) => {
+
                 state.loading = false;
-                state.user = action.payload.user; // Sirf user data save karo, token nahi
                 state.isAuthenticated = true;
                 state.error = null;
+                // Sirf user data save karo, token nahi
+                state.user = action.payload.user || action.payload;
+
+                localStorage.setItem('user', JSON.stringify(state.user));
+
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
@@ -92,19 +115,27 @@ const authSlice = createSlice({
                 state.loading = true;
             })
             .addCase(loadUser.fulfilled, (state, action) => {
+                console.log("BACKEND SE KYA AAYA:", action.payload);
                 state.loading = false;
                 state.isAuthenticated = true;
-                state.user = action.payload.user;
+                state.user = action.payload.user || action.payload;
+
+                localStorage.setItem('user', JSON.stringify(state.user));
             })
             .addCase(loadUser.rejected, (state) => {
                 state.loading = false;
                 state.isAuthenticated = false;
                 state.user = null;
+
+                localStorage.removeItem('user');
             })
             // Logout Case
             .addCase(logoutUser.fulfilled, (state) => {
                 state.user = null;
                 state.isAuthenticated = false;
+
+                localStorage.removeItem('user');
+
             })
 
             // Add Address

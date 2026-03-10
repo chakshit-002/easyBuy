@@ -7,6 +7,7 @@ import Cart from '../pages/Cart';
 import Orders from '../pages/Orders';
 import Checkout from '../pages/Checkout';
 import ProtectedRoute from './ProtectedRoute';
+import ProductPage from '../pages/ProductPage';
 
 const MainRoutes = () => {
   return (
@@ -17,6 +18,7 @@ const MainRoutes = () => {
       <Route path="/cart" element={<Cart />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/products" element={<ProductPage />} />
 
       {/* --- PROTECTED ROUTES (Sirf Login ke baad) --- */}
       <Route element={<ProtectedRoute />}>

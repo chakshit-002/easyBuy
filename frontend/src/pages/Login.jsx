@@ -1,7 +1,7 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // Maan lijiye aapne loginUser action authSlice mein banaya hai
-import { loginUser } from '../features/auth/authSlice'; 
+import { loginUser } from '../features/auth/authSlice';
 import { useNavigate } from 'react-router-dom';
 
 const Login = () => {
@@ -10,7 +10,7 @@ const Login = () => {
 
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { loading, error,isAuthenticated } = useSelector((state) => state.auth);
+  const { loading, error, isAuthenticated } = useSelector((state) => state.auth);
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -18,19 +18,28 @@ const Login = () => {
     }
   }, [isAuthenticated, navigate]);
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    
+
     // 1. Data prepare karo
     const loginData = { email, password };
 
-    // 2. Dispatch karo (Abhi ke liye console kar rahe hain)
-    console.log("Attempting secure login...");
-    dispatch(loginUser(loginData));
+    try {
+      console.log("Attempting secure login...");
 
-    // 3. SECURITY: Login hit hote hi password state se uda do 
-    // taaki memory mein na rahe
-    setPassword(''); 
+      // 1. Wait karo jab tak login success na ho jaye
+      await dispatch(loginUser(loginData)).unwrap();
+
+      // 2. Agar success hua, tabhi password state se delete karo
+      // Isse security bhi bani rahegi aur UX bhi
+      setPassword('');
+
+      // Navigation hum useEffect se handle kar hi rahe hain
+    } catch (err) {
+      // Agar error aaya toh password wahi rahega
+      // User apni galti dekh kar usey sahi kar payega
+      console.error("Login failed:", err);
+    }
   };
 
   return (
@@ -41,7 +50,7 @@ const Login = () => {
             Sign in to your account
           </h2>
         </div>
-        
+
         <form className="mt-8 space-y-6" onSubmit={handleLogin} autoComplete="off">
           <div className="rounded-md shadow-sm -space-y-px">
             <div className="mb-4">
@@ -86,7 +95,7 @@ const Login = () => {
               ) : 'Sign In'}
             </button>
           </div>
-          
+
           {error && <p className="text-red-500 text-xs text-center mt-2 font-semibold bg-red-50 py-2 rounded">{error}</p>}
         </form>
       </div>
