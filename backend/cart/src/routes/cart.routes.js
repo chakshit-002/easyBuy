@@ -15,6 +15,8 @@ router.post('/items',validation.validateAddItemToCart, createAuthMiddleware(['us
 //2
 router.patch('/items/:productId',validation.validateUpdateCartItem,createAuthMiddleware(['user']),cartController.updateItemQuantity)
 
+router.delete('/items/:productId',validation.validateUpdateCartItem,createAuthMiddleware(['user']),cartController.removeItemFromCart)
+
 module.exports = router;
 
 

@@ -11,6 +11,23 @@ export const fetchAllProducts = createAsyncThunk('products/fetchAll', async (fil
     }
 });
 
+export const fetchProductById = createAsyncThunk(
+    'products/fetchById',
+    async (id, { rejectWithValue }) => {
+        try {
+            // Axios automatically JSON parse kar deta hai, 
+            // isliye .json() ki zaroorat nahi hai.
+            const response = await productAPI.get(`/${id}`);
+
+            // Response structure check karo (aksar response.data hota hai axios mein)
+            return response.data;
+        } catch (error) {
+            // Agar backend se error aaye toh message pass karo
+            return rejectWithValue(error.response?.data?.message || "Failed to fetch product");
+        }
+    }
+);
+
 const productSlice = createSlice({
     name: 'products',
     initialState: {
@@ -40,6 +57,18 @@ const productSlice = createSlice({
                 state.hasMore = newItems.length === 20;
             })
             .addCase(fetchAllProducts.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(fetchProductById.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchProductById.fulfilled, (state, action) => {
+                state.loading = false;
+                state.selectedProduct = action.payload.data; // Data yahan save hoga
+            })
+            .addCase(fetchProductById.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });

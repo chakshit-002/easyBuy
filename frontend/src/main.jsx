@@ -5,10 +5,11 @@ import { store } from './app/store'   // 2. Apna store import karein
 import './index.css'
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
+import { Toaster } from 'react-hot-toast';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
-  
+  <Toaster position="bottom-center" reverseOrder={false} />
     {/* 3. Provider mein store pass karein */}
     <Provider store={store}>
       <App />
