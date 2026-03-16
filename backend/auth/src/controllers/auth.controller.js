@@ -58,7 +58,7 @@ async function registerUser(req, res) {
             publishToQueue("AUTH_SELLER_DASHBOARD.USER_CREATED", user)
 
         ]);
-        
+
         const token = jwt.sign({
             id: user._id,
             username: user.username,
@@ -171,91 +171,100 @@ async function logoutUser(req, res) {
     })
 }
 
-
 async function getUserAddresses(req, res) {
-    const id = req.user.id;
+    try {
+        const id = req.user.id;
+        const user = await userModel.findById(id).select('addresses');
 
-    const user = await userModel.findById(id).select('addresses');
-    if (!user) {
-        return res.status(404).json({
-            message: "User not found"
-        })
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        return res.status(200).json({
+            message: "User addresses fetched successfully",
+            addresses: user.addresses || []
+        });
+    } catch (error) {
+        console.error("GET ADDRESS ERROR:", error);
+        return res.status(500).json({ message: "Internal server error", error: error.message });
     }
-    return res.status(200).json({
-        message: "User addresses fetched successfully",
-        addresses: user.addresses
-    })
 }
 
+// 2. ADD NEW ADDRESS
 async function addUserAddress(req, res) {
-    const id = req.user.id;
-    const { street, city, state, pincode, country, isDefault } = req.body;
+    try {
+        const id = req.user.id;
+        const { street, city, state, pincode, country, isDefault } = req.body;
 
-    const user = await userModel.findOneAndUpdate({ _id: id }, {
-        $push: {
-            addresses: {
-                street,
-                city,
-                state,
-                pincode,
-                country,
-                isDefault
-            }
+        // Basic validation check
+        if (!street || !city || !pincode) {
+            return res.status(400).json({ message: "Street, City, and Pincode are required" });
         }
-    }, { new: true }); //updated version show krna hai new:true ka mltb
 
-    if (!user) {
-        return res.status(404).json({
-            message: "User not found"
-        })
+        // Agar ye default address hai, toh baaki sab ko false karna padega (Logic fix)
+        if (isDefault) {
+            await userModel.updateOne(
+                { _id: id },
+                { $set: { "addresses.$[].isDefault": false } }
+            );
+        }
+
+        const user = await userModel.findOneAndUpdate(
+            { _id: id },
+            {
+                $push: {
+                    addresses: { street, city, state, pincode, country, isDefault: isDefault || false }
+                }
+            },
+            { new: true, runValidators: true } // runValidators check karega ki Schema ke rules follow ho rahe hain
+        );
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        return res.status(201).json({
+            message: "Address added successfully",
+            address: user.addresses[user.addresses.length - 1],
+            allAddresses: user.addresses
+        });
+    } catch (error) {
+        console.error("ADD ADDRESS ERROR:", error);
+        return res.status(500).json({ message: "Failed to add address", error: error.message });
     }
-
-    return res.status(201).json({
-        message: "Address added successfully",
-        address: user.addresses[user.addresses.length - 1] //jo address add hua hai vo last mei add hoga toh usko return krdege
-    })
 }
 
+// 3. DELETE ADDRESS
 async function deleteUserAddress(req, res) {
-    const id = req.user.id;
-    const { addressId } = req.params;
+    try {
+        const id = req.user.id;
+        const { addressId } = req.params;
 
+        // Pehle check karo address format sahi hai ya nahi
+        const user = await userModel.findOneAndUpdate(
+            { _id: id },
+            { $pull: { addresses: { _id: addressId } } },
+            { new: true }
+        );
 
-    const isAddressExists = await userModel.findOne({
-        _id: id,
-        'addresses._id': addressId
-    })
-
-    if (!isAddressExists) {
-        return res.status(404).json({
-            message: "Address not found"
-        })
-    }
-
-    const user = await userModel.findOneAndUpdate({ _id: id }, {
-        $pull: {
-            addresses: { _id: addressId }
+        if (!user) {
+            return res.status(404).json({ message: "User not found or Invalid Request" });
         }
-    }, { new: true });//updated version show krna hai new:true ka mltb
 
-    if (!user) {
-        return res.status(404).json({
-            message: "User  not found"
-        })
+        // Verify deletion
+        const stillExists = user.addresses.some(addr => addr._id.toString() === addressId);
+        if (stillExists) {
+            return res.status(500).json({ message: "Database failed to remove the address" });
+        }
+
+        return res.status(200).json({
+            message: "Address deleted successfully",
+            addresses: user.addresses
+        });
+    } catch (error) {
+        console.error("DELETE ADDRESS ERROR:", error);
+        return res.status(500).json({ message: "Internal server error", error: error.message });
     }
-
-    const addressExists = user.addresses.some(addr => addr._id.toString() === addressId);//some return true condition match hote hi otherwise false
-
-    if (addressExists) {
-        return res.status(500).json({
-            message: "Failed to delete address"
-        })
-    }
-
-    return res.status(200).json({
-        message: "Address deleted successfully",
-        addresses: user.addresses
-    })
 }
 module.exports = { registerUser, loginUser, getCurrentUser, logoutUser, getUserAddresses, addUserAddress, deleteUserAddress }
 

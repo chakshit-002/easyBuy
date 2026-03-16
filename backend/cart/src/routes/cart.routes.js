@@ -12,10 +12,11 @@ router.get('/',createAuthMiddleware(['user']),cartController.getCart);
 //1
 router.post('/items',validation.validateAddItemToCart, createAuthMiddleware(['user']),cartController.addItemToCart);
 
+
 //2
 router.patch('/items/:productId',validation.validateUpdateCartItem,createAuthMiddleware(['user']),cartController.updateItemQuantity)
 
-router.delete('/items/:productId',validation.validateUpdateCartItem,createAuthMiddleware(['user']),cartController.removeItemFromCart)
+router.delete('/items/:productId',validation.validateDeleteCartItem,createAuthMiddleware(['user']),cartController.removeItemFromCart)
 
 module.exports = router;
 

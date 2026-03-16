@@ -33,9 +33,15 @@ const validateUpdateCartItem = [
         .withMessage('Quantity must be a positive integer'),
     validateResult,
 ];
-
+const validateDeleteCartItem = [
+    param('productId')
+        .custom((value) => mongoose.Types.ObjectId.isValid(value))
+        .withMessage('Invalid Product ID format'),
+    // Yahan humne qty nahi mangi, sirf ID check ki hai
+];
 
 module.exports = {
     validateAddItemToCart,
-    validateUpdateCartItem
+    validateUpdateCartItem,
+    validateDeleteCartItem
 }

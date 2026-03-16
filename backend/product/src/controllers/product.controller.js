@@ -202,11 +202,59 @@ async function getProductsBySeller(req, res) {
         data: products
     })
 }
+
+async function getProductsByIds(req, res) {
+    try {
+        const { ids } = req.query; // Expecting: "id1,id2,id3"
+
+        // 1. Validation: Check agar ids bheji hi nahi hain
+        if (!ids || ids.trim() === "") {
+            return res.status(400).json({
+                message: "No product IDs provided"
+            });
+        }
+
+        // 2. String ko array mein convert karo aur faltu spaces saaf karo
+        const idArray = ids.split(',').map(id => id.trim());
+
+        // 3. Validation: Check karo ki IDs valid MongoDB ObjectIds hain ya nahi
+        const isValid = idArray.every(id => mongoose.Types.ObjectId.isValid(id));
+        if (!isValid) {
+            return res.status(400).json({
+                message: "One or more Product IDs are invalid"
+            });
+        }
+
+        // 4. Database query: $in operator saare matches ek baar mein le aayega
+        const products = await productModel.find({
+            _id: { $in: idArray }
+        });
+
+        // 5. Response handling
+        if (!products || products.length === 0) {
+            return res.status(404).json({
+                message: "No products found for the given IDs"
+            });
+        }
+
+        res.status(200).json(products);
+
+    } catch (error) {
+        // 6. Global Error Catching
+        console.error("Error in getProductsByIds:", error);
+        res.status(500).json({
+            message: "Internal Server Error",
+            error: error.message
+        });
+    }
+}
+
 module.exports = {
     createProduct,
     getProducts,
     getProductById,
     updateProduct,
     deleteProduct,
-    getProductsBySeller
+    getProductsBySeller,
+    getProductsByIds
 }

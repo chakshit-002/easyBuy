@@ -25,6 +25,7 @@ export const authAPI = createAPI(SERVICES.AUTH);
 export const productAPI = createAPI(SERVICES.PRODUCT);
 export const cartAPI = createAPI(SERVICES.CART);
 export const orderAPI = createAPI(SERVICES.ORDER);
+export const paymentAPI = createAPI(SERVICES.PAYMENT);
 // export const aiAPI = createAPI(SERVICES.AI);
 // export const sellerAPI = createAPI(SERVICES.SELLER);
 

@@ -32,16 +32,16 @@ export const addToCartAsync = createAsyncThunk(
 
 // 1. Update Quantity Thunk
 export const updateCartQtyAsync = createAsyncThunk(
-  'cart/updateQty',
-  async ({ productId, qty }, { rejectWithValue }) => {
-    try {
-      // Backend expect kar raha hai: PATCH /api/cart/items/:productId
-      const response = await cartAPI.patch(`/items/${productId}`, { qty }, { withCredentials: true });
-      return response.data; // Should return { message, cart }
-    } catch (error) {
-      return rejectWithValue(error.response?.data?.message || "Failed to update");
+    'cart/updateQty',
+    async ({ productId, qty }, { rejectWithValue }) => {
+        try {
+            // Backend expect kar raha hai: PATCH /api/cart/items/:productId
+            const response = await cartAPI.patch(`/items/${productId}`, { qty }, { withCredentials: true });
+            return response.data; // Should return { message, cart }
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.message || "Failed to update");
+        }
     }
-  }
 );
 
 // 2. Remove Item Thunk (Future proofing)
@@ -101,6 +101,17 @@ const cartSlice = createSlice({
                 }
             })
             .addCase(updateCartQtyAsync.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload;
+            })
+            .addCase(removeFromCartAsync.fulfilled, (state, action) => {
+                state.loading = false;
+                // Backend se updated cart mil raha hai (jisme wo item delete ho chuka hai)
+                if (action.payload?.cart?.items) {
+                    state.items = action.payload.cart.items;
+                }
+            })
+            .addCase(removeFromCartAsync.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
             });
