@@ -62,6 +62,11 @@ const addressSlice = createSlice({
                     state.selectedAddress = defaultAddr || action.payload[0];
                 }
             })
+            .addCase(fetchAddressesAsync.rejected, (state, action) => {
+                state.loading = false;
+                // Error object ko string bana do taaki React crash na ho
+                state.error = action.payload || "Something went wrong";
+            })
             .addCase(addAddressAsync.fulfilled, (state, action) => {
                 state.addresses.push(action.payload);
                 if (action.payload.isDefault) state.selectedAddress = action.payload;

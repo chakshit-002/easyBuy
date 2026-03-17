@@ -70,3 +70,118 @@ const order = new orderModel({ ... }); // Sirf memory mein object bana
 
 order.shippingAddress.city = 'Jaipur';
 await order.save(); // Changes save karne ke liye
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+async function getMyOrders(req, res) {
+    const user = req.user;
+
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
+    try {
+        const orders = await orderModel.find({
+            user: user.id
+        }).skip(skip).limit(limit).exec();
+        const totalOrders = await orderModel.countDocuments({ user: user.id });
+
+        res.status(200).json({
+            orders,
+            meta: {
+                total: totalOrders,
+                page,
+                limit
+            }
+        })
+    }
+    catch (err) {
+        res.status(500).json({
+            message: "Internal Server error", error: err.message
+        })
+    }
+}
+
+
+// order.controller.js -> getMyOrders update
+async function getMyOrders(req, res) {
+    const user = req.user;
+    const token = req.cookies?.token || req.headers?.authorization?.split(' ')[1];
+
+    try {
+        const orders = await orderModel.find({ user: user.id }).sort({ createdAt: -1 });
+
+        // Enrichment Logic: Saare orders ke products ki details mangwao
+        const enrichedOrders = await Promise.all(orders.map(async (order) => {
+            const productIds = order.items.map(item => item.product.toString());
+
+            try {
+                const productRes = await axios.get(`http://localhost:3001/api/products/bulk`, {
+                    params: { ids: productIds.join(',') },
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const productsData = productRes.data;
+
+                const enrichedItems = order.items.map(item => {
+                    const info = productsData.find(p => p._id === item.product.toString());
+                    return {
+                        ...item._doc,
+                        product: info || { title: "Product Unavailable", images: [] }
+                    };
+                });
+
+                return { ...order._doc, items: enrichedItems };
+            } catch (err) {
+                return order; // API fail ho toh original bhej denge
+            }
+        }));
+
+        res.status(200).json({ orders: enrichedOrders });
+    } catch (err) {
+        res.status(500).json({ message: "Error", error: err.message });
+    }
+}
+
+async function getOrderById(req, res) {
+    const user = req.user;
+    const orderId = req.params.id
+
+    try {
+        const order = await orderModel.findById(orderId);
+
+        if (!order) {
+            return res.status(404).json({
+                message: "Order not found"
+            })
+        }
+
+        if (order.user.toString() !== user.id) {
+            return res.status(403).json({
+                message: "Forbidden: You don't have access"
+            })
+        }
+
+        res.status(200).json({
+            order
+        })
+
+    } catch (err) {
+        res.status(500).json({
+            message: "Internal server error", error: err.message
+        })
+    }
+}

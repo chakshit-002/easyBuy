@@ -15,9 +15,23 @@ export const createOrderAsync = createAsyncThunk(
     }
 );
 
+
+export const fetchMyOrdersAsync = createAsyncThunk(
+    'order/fetchMyOrders',
+    async (_, { rejectWithValue }) => {
+        try {
+            const response = await orderAPI.get('/me'); 
+            return response.data.orders;
+        } catch (err) {
+            return rejectWithValue(err.response?.data?.message || "Failed to fetch orders");
+        }
+    }
+);
+
 const orderSlice = createSlice({
     name: 'order',
     initialState: {
+        orders: [], // Saare orders ke liye
         currentOrder: null,
         loading: false,
     },
@@ -28,7 +42,14 @@ const orderSlice = createSlice({
                 state.loading = false;
                 state.currentOrder = action.payload;
             })
-            .addCase(createOrderAsync.rejected, (state) => { state.loading = false; });
+            .addCase(createOrderAsync.rejected, (state) => { state.loading = false; })
+            // Fetch Orders Cases
+            .addCase(fetchMyOrdersAsync.pending, (state) => { state.loading = true; })
+            .addCase(fetchMyOrdersAsync.fulfilled, (state, action) => {
+                state.loading = false;
+                state.orders = action.payload;
+            })
+            .addCase(fetchMyOrdersAsync.rejected, (state) => { state.loading = false; });
     }
 });
 

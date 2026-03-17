@@ -340,9 +340,9 @@ const Cart = () => {
                 <span className="text-5xl font-black text-blue-600 tracking-tighter leading-none">₹{total.toLocaleString()}</span>
               </div>
 
-              <button className="w-full cursor-pointer bg-blue-600 text-white py-6 rounded-[2rem] font-black text-xl flex items-center justify-center gap-4 hover:bg-gray-900 transition-all hover:shadow-2xl active:scale-[0.98] group">
+              <Link to='/checkout' className="w-full cursor-pointer bg-blue-600 text-white py-6 rounded-[2rem] font-black text-xl flex items-center justify-center gap-4 hover:bg-gray-900 transition-all hover:shadow-2xl active:scale-[0.98] group">
                 Checkout Now <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform" />
-              </button>
+              </Link>
 
               <div className="mt-8 flex items-center justify-center gap-2 text-gray-300 text-[10px] font-black uppercase tracking-[0.2em]">
                 <ShieldCheck className="h-4 w-4 text-green-500" /> 256-Bit SSL Secured

@@ -8,6 +8,7 @@ import Orders from '../pages/Orders';
 import Checkout from '../pages/Checkout';
 import ProtectedRoute from './ProtectedRoute';
 import ProductPage from '../pages/ProductPage';
+import OrderDetails from '../pages/OrderDetails';
 
 const MainRoutes = () => {
   return (
@@ -24,6 +25,7 @@ const MainRoutes = () => {
       <Route element={<ProtectedRoute />}>
         <Route path="/orders" element={<Orders />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/order/:id" element={<OrderDetails />} />
         {/* Aapka AI Buddy dashboard bhi yahan aa sakta hai */}
       </Route>
 

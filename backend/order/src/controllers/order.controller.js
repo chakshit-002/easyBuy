@@ -3,6 +3,29 @@ const axios = require('axios')
 const { publishToQueue } = require('../broker/broker')
 
 
+// Helper function to fetch product details from Product Service
+async function enrichOrderItems(items, token) {
+    const productIds = items.map(item => item.product.toString());
+    try {
+        const productRes = await axios.get(`http://localhost:3001/api/products/bulk`, {
+            params: { ids: productIds.join(',') },
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        const productsData = productRes.data;
+
+        return items.map(item => {
+            const info = productsData.find(p => p._id === item.product.toString());
+            return {
+                ...item._doc,
+                product: info || { title: "Product Unavailable", images: [{ url: 'https://placehold.co/100' }] }
+            };
+        });
+    } catch (err) {
+        console.error("Enrichment Failed:", err.message);
+        return items; // Fallback to original items
+    }
+}
+
 async function createOrder(req, res) {
     const user = req.user;
     //inter service data transfer ke time headers ka use krege 
@@ -10,6 +33,11 @@ async function createOrder(req, res) {
     const token = req.cookies?.token || req.headers?.authorization?.split(' ')[1];
 
     try {
+
+        if (!req.body.shippingAddress) {
+            return res.status(400).json({ message: "Shipping address is required" });
+        }
+
         //fetch user cart from cart service
         const cartResponse = await axios.get(`http://localhost:3002/api/cart`, {
             headers: {
@@ -17,22 +45,23 @@ async function createOrder(req, res) {
             }
         })
 
+        if (!cartResponse.data.cart || cartResponse.data.cart.items.length === 0) {
+            return res.status(400).json({ message: "Cart is empty" });
+        }
+
         // console.log("cart response", cartResponse.data, cartResponse.data.cart.items)
 
-        const products = await Promise.all(cartResponse.data.cart.items.map(async (item) => {
 
-            return (await axios.get(`http://localhost:3001/api/products/${item.productId}`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })).data.data
-        }))
-        // console.log("Product fetched",products)
         let priceAmount = 0;
 
-        const orderItems = cartResponse.data.cart.items.map((item, index) => {
+        const orderItems = await Promise.all(cartResponse.data.cart.items.map(async (item) => {
 
-            const product = products.find(p => p._id === item.productId);
+            const pId = item.productId._id || item.productId;
+
+            const productRes = await axios.get(`http://localhost:3001/api/products/${pId}`, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const product = productRes.data.data;
 
             //if not in stock, does not allow order creation
 
@@ -44,14 +73,14 @@ async function createOrder(req, res) {
             priceAmount += itemTotal;
 
             return {
-                product: item.productId,
+                product: pId,
                 quantity: item.quantity,
                 price: {
                     amount: itemTotal,
-                    currency: product.price.currency
+                    currency: product.price.currency || "INR"
                 }
             }
-        })
+        }))
 
         // console.log("Total price amount",priceAmount);
         // console.log(orderItems)
@@ -89,62 +118,37 @@ async function createOrder(req, res) {
 
 }
 
+// GET MY ORDERS
 async function getMyOrders(req, res) {
-    const user = req.user;
-
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
-
     try {
-        const orders = await orderModel.find({
-            user: user.id
-        }).skip(skip).limit(limit).exec();
-        const totalOrders = await orderModel.countDocuments({ user: user.id });
+        const token = req.cookies?.token || req.headers?.authorization?.split(' ')[1];
+        const orders = await orderModel.find({ user: req.user.id }).sort({ createdAt: -1 });
 
-        res.status(200).json({
-            orders,
-            meta: {
-                total: totalOrders,
-                page,
-                limit
-            }
-        })
-    }
-    catch (err) {
-        res.status(500).json({
-            message: "Internal Server error", error: err.message
-        })
+        const enrichedOrders = await Promise.all(orders.map(async (order) => {
+            const enrichedItems = await enrichOrderItems(order.items, token);
+            return { ...order._doc, items: enrichedItems };
+        }));
+
+        res.status(200).json({ orders: enrichedOrders });
+    } catch (err) {
+        res.status(500).json({ message: "Internal Server Error", error: err.message });
     }
 }
 
+// GET ORDER BY ID
 async function getOrderById(req, res) {
-    const user = req.user;
-    const orderId = req.params.id
-
     try {
-        const order = await orderModel.findById(orderId);
-  
-        if (!order) {
-            return res.status(404).json({
-                message: "Order not found"
-            })
-        }
+        const { id } = req.params;
+        const token = req.cookies?.token || req.headers?.authorization?.split(' ')[1];
+        const order = await orderModel.findById(id);
 
-        if (order.user.toString() !== user.id) {
-            return res.status(403).json({
-                message: "Forbidden: You don't have access"
-            })
-        }
+        if (!order) return res.status(404).json({ message: "Order not found" });
+        if (order.user.toString() !== req.user.id) return res.status(403).json({ message: "Unauthorized" });
 
-        res.status(200).json({
-            order
-        })
-
+        const enrichedItems = await enrichOrderItems(order.items, token);
+        res.status(200).json({ order: { ...order._doc, items: enrichedItems } });
     } catch (err) {
-        res.status(500).json({
-            message: "Internal server error", error: err.message
-        })
+        res.status(500).json({ message: "Internal Server Error", error: err.message });
     }
 }
 
