@@ -9,6 +9,9 @@ import Checkout from '../pages/Checkout';
 import ProtectedRoute from './ProtectedRoute';
 import ProductPage from '../pages/ProductPage';
 import OrderDetails from '../pages/OrderDetails';
+import ProfileSettings from '../pages/ProfileSettings';
+import EasyBuyAI from '../pages/EasyBuyAI';
+import SellerDashboard from '../pages/SellerDashboard';
 
 const MainRoutes = () => {
   return (
@@ -16,17 +19,22 @@ const MainRoutes = () => {
       {/* --- PUBLIC ROUTES (Sabke liye open) --- */}
       <Route path="/" element={<Home />} />
       <Route path="/product/:id" element={<ProductDetails />} />
-      <Route path="/cart" element={<Cart />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/products" element={<ProductPage />} />
 
       {/* --- PROTECTED ROUTES (Sirf Login ke baad) --- */}
-      <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute allowedRoles={['user', 'seller']} />}>
         <Route path="/orders" element={<Orders />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order/:id" element={<OrderDetails />} />
-        {/* Aapka AI Buddy dashboard bhi yahan aa sakta hai */}
+        <Route path="/profile" element={<ProfileSettings />} />
+        <Route path="/ai-buddy" element={<EasyBuyAI />} />
+        <Route path="/cart" element={<Cart />} />
+      </Route>
+
+      <Route element={<ProtectedRoute allowedRoles={['seller']} />}>
+        <Route path="/seller-dashboard" element={<SellerDashboard />} />
       </Route>
 
       {/* 404 Page (Optional) */}

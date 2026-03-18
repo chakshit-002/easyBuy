@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchProductById } from '../features/products/productSlice';
 import { addToCartAsync } from '../features/cart/cartSlice';
@@ -11,6 +11,7 @@ import { toast } from 'react-hot-toast';
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   // Redux se data nikalna
@@ -44,19 +45,27 @@ const ProductDetails = () => {
     );
   }
 
-  const handleAddToCart = async () => {
+  const handleAddToCart = async (shouldRedirect = false) => {
     try {
       await dispatch(addToCartAsync({
         productId: product._id,
         qty: parseInt(quantity)
       })).unwrap();
 
-      toast.success('Added to cart!', {
-        style: { borderRadius: '15px', background: '#333', color: '#fff' }
-      });
+      if (shouldRedirect) {
+        navigate('/checkout');
+      } else {
+        toast.success('Added to cart!', {
+          style: { borderRadius: '15px', background: '#333', color: '#fff' }
+        });
+      }
     } catch (err) {
       toast.error(err || 'Failed to add item');
     }
+  };
+
+  const handleBuyNow = () => {
+    handleAddToCart(true); // Isse item add bhi hoga aur redirect bhi
   };
   // Logic for Discount
   const originalPrice = (product.originalPrice || product.price?.amount) + 2000; // Fallback agar backend mein na ho
@@ -135,10 +144,10 @@ const ProductDetails = () => {
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
-              <button onClick={handleAddToCart} className="flex-1 flex items-center justify-center gap-2 bg-gray-900 text-white py-4 rounded-2xl font-bold hover:shadow-xl transition-all active:scale-95">
+              <button onClick={() => handleAddToCart(false)} className="flex-1 flex items-center justify-center gap-2 bg-gray-900 text-white py-4 rounded-2xl font-bold hover:shadow-xl transition-all active:scale-95">
                 <ShoppingCart className="h-5 w-5" /> Add to Cart
               </button>
-              <button className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-4 rounded-2xl font-bold hover:shadow-xl hover:bg-blue-700 transition-all active:scale-95">
+              <button onClick={handleBuyNow} className="flex-1 flex items-center justify-center gap-2 bg-blue-600 text-white py-4 rounded-2xl font-bold hover:shadow-xl hover:bg-blue-700 transition-all active:scale-95">
                 <Zap className="h-5 w-5" /> Buy Now
               </button>
             </div>

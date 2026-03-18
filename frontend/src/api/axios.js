@@ -7,7 +7,7 @@ const SERVICES = {
     CART: 'http://localhost:3002/api/cart',
     ORDER: 'http://localhost:3003/api/orders',
     PAYMENT: 'http://localhost:3004/api/payments',
-    // AI: 'http://localhost:3005/api/v1',
+    AI: 'http://localhost:3005/',
     // NOTIFICATION: 'http://localhost:3006/',
     // SELLER: 'http://localhost:3007/api/v1',
 };
@@ -26,7 +26,7 @@ export const productAPI = createAPI(SERVICES.PRODUCT);
 export const cartAPI = createAPI(SERVICES.CART);
 export const orderAPI = createAPI(SERVICES.ORDER);
 export const paymentAPI = createAPI(SERVICES.PAYMENT);
-// export const aiAPI = createAPI(SERVICES.AI);
+export const aiAPI = createAPI(SERVICES.AI);
 // export const sellerAPI = createAPI(SERVICES.SELLER);
 
 // Default export (optional, maybe points to Auth or Gateway)

@@ -13,10 +13,14 @@ const Login = () => {
   const { loading, error, isAuthenticated } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate('/'); // Ya phir jo bhi aapka home route hai
+    if (isAuthenticated && user) {
+      if (user.role === 'seller') {
+        navigate('/seller/dashboard'); // Seller ke liye dashboard
+      } else {
+        navigate('/'); // Normal customer ke liye home
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -25,6 +29,7 @@ const Login = () => {
     const loginData = { email, password };
 
     try {
+
       console.log("Attempting secure login...");
 
       // 1. Wait karo jab tak login success na ho jaye

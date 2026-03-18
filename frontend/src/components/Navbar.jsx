@@ -37,7 +37,10 @@ const Navbar = () => {
         { name: 'Home', path: '/', icon: LayoutDashboard },
         { name: 'Products', path: '/products', icon: ShoppingBag },
         { name: 'AI Buddy', path: '/ai-buddy', icon: BotMessageSquare },
-        { name: 'Cart', path: '/cart', icon: LayoutDashboard }, // Placeholder icon
+        ...(user?.role === 'seller'
+            ? [{ name: 'Dashboard', path: '/seller-dashboard', icon: LayoutDashboard }]
+            : [{ name: 'Cart', path: '/cart', icon: ShoppingCart }]
+        ), // Placeholder icon
         { name: 'Orders', path: '/orders', icon: LayoutDashboard }, // Placeholder icon
     ];
 
