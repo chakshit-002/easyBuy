@@ -7,7 +7,7 @@ async function initSocketServer(httpServer) {
     const io = new Server(httpServer, {
         // path: '/api/socket/socket.io/'
         cors: {
-            origin: "http://localhost:5173", // Apne frontend ka URL dalo
+            origin: "http://localhost:5173", // frontend ka URL
             methods: ["GET", "POST"],
             credentials: true
         },

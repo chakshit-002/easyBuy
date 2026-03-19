@@ -28,6 +28,7 @@ async function enrichOrderItems(items, token) {
 
 async function createOrder(req, res) {
     const user = req.user;
+
     //inter service data transfer ke time headers ka use krege 
     //uske liye axios install krna pdega 
     const token = req.cookies?.token || req.headers?.authorization?.split(' ')[1];
@@ -66,6 +67,7 @@ async function createOrder(req, res) {
             //if not in stock, does not allow order creation
 
             if (product.stock < item.quantity) {
+
                 throw new Error(`Product ${product.title} is out of stock or insufficient stock`)
             }
             const itemTotal = product.price.amount * item.quantity;
@@ -102,18 +104,28 @@ async function createOrder(req, res) {
                 country: req.body.shippingAddress.country,
             }
         })
-
+        // 1. Seller Dashboard sync (Revenue/Sales ke liye)
         await publishToQueue("ORDER_SELLER_DASHBOARD.ORDER_CREATED", order)
+        // 2. YE ADD isliye kiya  kyu ki Product Service sync (Stock kam karne ke liye)
+        await publishToQueue("ORDER_PRODUCT_SERVICE.ORDER_CREATED", order);
+        console.log("Message sent to Product Service for stock reduction");
 
         res.status(201).json({
             order
         })
     }
     catch (err) {
-        console.log("Error fetching cart", err)
+        if (err.message.endsWith("insufficient stock")) {
+            return res.status(400).json({
+                message: "Some products are out of stock",
+                error: err.message
+            });
+        }
+
         res.status(500).json({
-            message: "Internal server error ", error: err.message
-        })
+            message: "Internal server error",
+            error: err.message
+        });
     }
 
 }
@@ -179,7 +191,18 @@ async function cancelOrderById(req, res) {
         }
 
         order.status = "CANCELLED";
-        await order.save();
+        const updatedOrder = await order.save();
+
+
+
+        await Promise.all([
+            // 1. Dashboard sync (Revenue kam karne ke liye)
+            publishToQueue("ORDER_SELLER_DASHBOARD.ORDER_CANCELLED", updatedOrder.toObject()),
+
+            // 2.  Product Service ko batane ke liye ki stock WAPAS BADHAO
+            publishToQueue("ORDER_PRODUCT_SERVICE.ORDER_CANCELLED", updatedOrder.toObject())
+        ])
+
         res.status(200).json({
             order
         })

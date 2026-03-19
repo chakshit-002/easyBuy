@@ -3,33 +3,47 @@ const orderModel = require("../models/order.model")
 const paymentModel = require("../models/payment.model")
 const productModel = require("../models/product.model")
 
-
+const mongoose = require('mongoose')
 
 async function getMetrics(req, res) {
     try {
         const seller = req.user;
-
+        // console.log(seller);
         // Get all products for this seller
-        const products = await productModel.find({ seller: seller._id });
+        const products = await productModel.find({ seller: seller.id });
         const productIds = products.map(p => p._id);
-
+        // console.log("products ", products[0])
+        // console.log("productIds ", productIds)
         // Get all orders containing seller's products
         const orders = await orderModel.find({
             'items.product': { $in: productIds },
-            status: { $in: ["CONFIRMED", "SHIPPED", "DELIVERED"] }
+            status: { $in: ["PENDING", "CONFIRMED", "SHIPPED", "DELIVERED"] }
         });
 
+        // console.log("order", orders)
         // Sales: total number of items sold
         let sales = 0;
         let revenue = 0;
         const productSales = {};
 
         orders.forEach(order => {
+            // Har order ka total ek hi baar add hona chahiye per seller item
             order.items.forEach(item => {
-                if (productIds.includes(item.product)) {
-                    sales += item.quantity;
-                    revenue += item.price.amount * item.quantity;
-                    productSales[item.product] = (productSales[item.product] || 0) + item.quantity;
+                // Safe Comparison using String
+                const itemId = item.product.toString();
+                const isSellersProduct = productIds.some(pId => pId.toString() === itemId);
+
+                if (isSellersProduct) {
+                    const itemQty = Number(item.quantity) || 0;
+                    const itemPrice = Number(item.price.amount) || 0;
+
+                    sales += itemQty;
+                    revenue += (itemPrice);
+
+                    // Debugging log (Terminal mein check karo calculation sahi ho rahi hai ya nahi)
+                    // console.log(`Adding Item: ${itemId} | Qty: ${itemQty} | Price: ${itemPrice} | Subtotal: ${itemPrice * itemQty}`);
+
+                    productSales[itemId] = (productSales[itemId] || 0) + itemQty;
                 }
             });
         });
@@ -44,6 +58,7 @@ async function getMetrics(req, res) {
             })
             .filter(Boolean);
 
+        // console.log("Sending Metrics to Frontend:", { sales, revenue, topProducts });
         return res.json({
             sales,
             revenue,
@@ -92,8 +107,9 @@ async function getProducts(req, res) {
 
     try {
         const seller = req.user;
-
-        const products = await productModel.find({ seller: seller._id }).sort({ createdAt: -1 });
+        console.log(seller)
+        const sellerId = new mongoose.Types.ObjectId(seller.id);
+        const products = await productModel.find({ seller: sellerId }).sort({ createdAt: -1 });
 
         return res.json(products);
     } catch (error) {

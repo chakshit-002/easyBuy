@@ -19,8 +19,8 @@ async function getCart(req, res) {
         // 2. Sari Product IDs nikalo
         const productIds = cart.items.map(item => item.productId.toString());
 
-        // 3. Product Service ko call karo details ke liye (Server-to-Server)
-        // Note: Yahan wahi port use karo jo Product Service ka hai
+        // 3. Product Service ko call krna details ke liye (Server-to-Server)
+        // Note: Yahan wahi port use karege jo Product Service ka hai
         const productResponse = await axios.get(`http://localhost:3001/api/products/bulk`, {
             params: { ids: productIds.join(',') }
         });
@@ -37,7 +37,7 @@ async function getCart(req, res) {
             };
         });
 
-        // 5. Totals Calculate karo
+        // 5. Totals Calculate karna
         const subtotal = enrichedItems.reduce((acc, item) => {
             return acc + ((item.productId?.price?.amount || 0) * item.quantity);
         }, 0);
@@ -87,7 +87,7 @@ async function addItemToCart(req, res) {
 
         await cart.save();
 
-        // 4. ENRICHMENT: Product Service se details mangwao
+        // 4. ENRICHMENT: Product Service se details mangwana
         // Ye step zaroori hai taaki Redux state mein turant Title/Price dikhe
         const productIds = cart.items.map(item => item.productId.toString());
         

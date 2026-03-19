@@ -9,7 +9,7 @@ const SERVICES = {
     PAYMENT: 'http://localhost:3004/api/payments',
     AI: 'http://localhost:3005/',
     // NOTIFICATION: 'http://localhost:3006/',
-    // SELLER: 'http://localhost:3007/api/v1',
+    SELLER: 'http://localhost:3007/api/seller/dashboard',
 };
 
 // Generic API Creator function
@@ -27,7 +27,7 @@ export const cartAPI = createAPI(SERVICES.CART);
 export const orderAPI = createAPI(SERVICES.ORDER);
 export const paymentAPI = createAPI(SERVICES.PAYMENT);
 export const aiAPI = createAPI(SERVICES.AI);
-// export const sellerAPI = createAPI(SERVICES.SELLER);
+export const sellerAPI = createAPI(SERVICES.SELLER);
 
 // Default export (optional, maybe points to Auth or Gateway)
 export default authAPI;

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, NavLink } from 'react-router-dom';
-import { LayoutDashboard, ShoppingBag, BotMessageSquare, LogOut, UserCircle, Menu, X, ChevronDown } from 'lucide-react'; // Lucide Icons
+import { House, LayoutDashboard, ShoppingBag, BotMessageSquare, LogOut, UserCircle, Menu, X, ChevronDown, ShoppingCart, PackagePlus, ClipboardList } from 'lucide-react'; // Lucide Icons
 import { logoutUser } from '../features/auth/authSlice'; // Maan raha hoon logout action ready hai
 import LogoutModal from './modals/LogoutModal.jsx'
 const Navbar = () => {
@@ -34,14 +34,20 @@ const Navbar = () => {
         }`;
 
     const navItems = [
-        { name: 'Home', path: '/', icon: LayoutDashboard },
-        { name: 'Products', path: '/products', icon: ShoppingBag },
-        { name: 'AI Buddy', path: '/ai-buddy', icon: BotMessageSquare },
-        ...(user?.role === 'seller'
-            ? [{ name: 'Dashboard', path: '/seller-dashboard', icon: LayoutDashboard }]
-            : [{ name: 'Cart', path: '/cart', icon: ShoppingCart }]
-        ), // Placeholder icon
-        { name: 'Orders', path: '/orders', icon: LayoutDashboard }, // Placeholder icon
+        { name: 'Home', path: '/', icon: House }, // Sabke liye common
+
+        // --- SELLER SPECIFIC LINKS ---
+        ...(user?.role === 'seller' ? [
+            { name: 'Dashboard', path: '/seller/dashboard', icon: LayoutDashboard },
+            { name: 'Create Product', path: '/seller/create-product', icon: PackagePlus },
+            { name: 'My Products', path: '/products', icon: ShoppingBag }, // Seller apne products dekh sake
+        ] : [
+            // --- CUSTOMER SPECIFIC LINKS ---
+            { name: 'Products', path: '/products', icon: ShoppingBag },
+            { name: 'AI Buddy', path: '/ai-buddy', icon: BotMessageSquare },
+            { name: 'Cart', path: '/cart', icon: ShoppingCart },
+            { name: 'Orders', path: '/orders', icon: ClipboardList },
+        ]),
     ];
 
     return (

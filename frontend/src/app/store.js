@@ -5,6 +5,7 @@ import cartReducer from '../features/cart/cartSlice';
 import addressReducer from '../features/address/addressSlice';
 import orderReducer from '../features/order/orderSlice';
 import chatReducer from '../features/chat/chatSlice';
+import sellerReducer from '../features/seller/sellerSlice';
 
 
 export const store = configureStore({
@@ -15,5 +16,6 @@ export const store = configureStore({
         address: addressReducer,
         order: orderReducer,
         aiChat: chatReducer,
+        seller: sellerReducer,
     },
 });

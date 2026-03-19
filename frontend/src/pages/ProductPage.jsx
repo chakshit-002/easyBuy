@@ -11,7 +11,7 @@ const ProductPage = () => {
 
     // States for filters
     const [searchTerm, setSearchTerm] = useState('');
-    const [maxPrice, setMaxPrice] = useState(100000);
+    const [maxPrice, setMaxPrice] = useState(1000000);
     const [isFilterOpen, setIsFilterOpen] = useState(false); // For Mobile View
 
     // Pagination State
@@ -118,7 +118,7 @@ const ProductPage = () => {
                                     <input
                                         type="range"
                                         className="w-full h-1.5 bg-blue-100 rounded-lg appearance-none cursor-pointer accent-blue-600"
-                                        min="0" max="100000" step="1000"
+                                        min="0" max="1000000" step="1000"
                                         value={maxPrice}
                                         onChange={(e) => setMaxPrice(e.target.value)}
                                     />
@@ -130,7 +130,7 @@ const ProductPage = () => {
                             </div>
                             
                             <button 
-                                onClick={() => { setSearchTerm(''); setMaxPrice(100000); setSkip(0); setIsFilterOpen(false); }} 
+                                onClick={() => { setSearchTerm(''); setMaxPrice(1000000); setSkip(0); setIsFilterOpen(false); }} 
                                 className="w-full py-3 rounded-xl border border-dashed border-gray-300 text-xs font-bold text-gray-500 hover:border-blue-500 hover:text-blue-500 transition-all"
                             >
                                 RESET ALL FILTERS

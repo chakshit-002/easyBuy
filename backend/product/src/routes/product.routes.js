@@ -16,6 +16,8 @@ router.get('/', productController.getProducts);
 
 //last for cart 
 router.get('/bulk', productController.getProductsByIds);
+// POST /api/products/validate-stock
+router.post('/validate-stock', productController.validateStock);
 
 //yahan se
 
