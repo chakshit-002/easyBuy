@@ -3,6 +3,8 @@ import { useDispatch } from 'react-redux';
 import { loadUser } from './features/auth/authSlice';
 import MainRoutes from './Routes/Mainroutes';
 import Navbar from './components/Navbar';
+import ScrollToTop from './components/ScrollToTop';
+import Footer from './components/Footer';
 
 
 const App = () => {
@@ -16,8 +18,10 @@ const App = () => {
 
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
+      <ScrollToTop />
       <Navbar />
       <MainRoutes />
+      <Footer/>
     </div>
   );
 }

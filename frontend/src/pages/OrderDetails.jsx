@@ -88,23 +88,24 @@ const OrderDetails = () => {
                         )}
                     </div>
 
-                    <div className="p-8 md:p-12">
+                    <div className="px-2 py-6 min-[450px]:p-8 md:p-12">
                         {/* Items Section */}
                         <div className="mb-16">
-                            <h3 className="text-[10px] font-black text-gray-300 uppercase tracking-[0.3em] mb-8">Purchased Products</h3>
+                            <h3 className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em] mb-8">Purchased Products</h3>
                             <div className="grid gap-6">
                                 {order.items.map((item, i) => (
-                                    <div key={i} className="flex items-center justify-between p-6 rounded-[2rem] bg-gray-50/30 border border-gray-50 group hover:border-blue-100 transition-all">
+                                    <div key={i} className="flex flex-col min-[450px]:flex-row items-center justify-between p-6 rounded-[2rem] bg-gray-50/30 border border-gray-50 group hover:border-blue-100 transition-all">
                                         <div className="flex items-center gap-6">
                                             <div className="w-20 h-20 bg-white rounded-2xl overflow-hidden border border-gray-100 p-1 flex-shrink-0">
                                                 <img src={item.product?.images?.[0]?.url || 'https://placehold.co/100'} className="w-full h-full object-cover rounded-xl mix-blend-multiply group-hover:scale-110 transition-transform duration-500" alt="" />
                                             </div>
                                             <div>
-                                                <h4 className="font-black text-gray-900 text-lg tracking-tight leading-tight">{item.product?.title || "Product Title"}</h4>
+                                                <h4 className="font-black text-gray-900 text-md sm:text-lg tracking-tight leading-tight">{item.product?.title || "Product Title"}</h4>
                                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest mt-1">Quantity: {item.quantity}</p>
+                                                <p className="block min-[450px]:hidden text-sm sm:text-xl font-black text-gray-900 italic tracking-tighter">₹{item.price.amount.toLocaleString()}</p>
                                             </div>
                                         </div>
-                                        <p className="text-xl font-black text-gray-900 italic tracking-tighter">₹{item.price.amount.toLocaleString()}</p>
+                                        <p className="hidden min-[450px]:block text-md sm:text-xl font-black text-gray-900 italic tracking-tighter">₹{item.price.amount.toLocaleString()}</p>
                                     </div>
                                 ))}
                             </div>
@@ -187,7 +188,7 @@ const OrderDetails = () => {
                                 </div>
                                 <div className="flex justify-between items-end">
                                     <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Total Pay</span>
-                                    <span className="text-5xl font-black italic tracking-tighter leading-none">₹{order.totalPrice.amount.toLocaleString()}</span>
+                                    <span className="text-xl sm:text-5xl font-black italic tracking-tighter leading-none">₹{order.totalPrice.amount.toLocaleString()}</span>
                                 </div>
                             </div>
                         </div>

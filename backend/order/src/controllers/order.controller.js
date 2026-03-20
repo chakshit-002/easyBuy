@@ -86,7 +86,16 @@ async function createOrder(req, res) {
 
         // console.log("Total price amount",priceAmount);
         // console.log(orderItems)
-
+        try {
+            await axios.get('http://localhost:3004/api/payments/health', { timeout: 2000 });
+        } catch (paymentErr) {
+            // Agar payment service down hai, toh yahi se error bhej do
+            return res.status(503).json({
+                message: "Payment Gateway is currently down. Please try again later.",
+                error: "Payment Service Unreachable"
+            });
+        }
+        
         const order = await orderModel.create({
             user: user.id,
             items: orderItems,
@@ -108,6 +117,13 @@ async function createOrder(req, res) {
         await publishToQueue("ORDER_SELLER_DASHBOARD.ORDER_CREATED", order)
         // 2. YE ADD isliye kiya  kyu ki Product Service sync (Stock kam karne ke liye)
         await publishToQueue("ORDER_PRODUCT_SERVICE.ORDER_CREATED", order);
+
+        await Promise.all([
+            // 1. Seller Dashboard sync (Revenue/Sales ke liye)
+            publishToQueue("ORDER_SELLER_DASHBOARD.ORDER_CREATED", order),
+            // 2. YE ADD isliye kiya  kyu ki Product Service sync (Stock kam karne ke liye)
+            publishToQueue("ORDER_PRODUCT_SERVICE.ORDER_CREATED", order)
+        ])
         console.log("Message sent to Product Service for stock reduction");
 
         res.status(201).json({

@@ -13,10 +13,14 @@ import ProfileSettings from '../pages/ProfileSettings';
 import EasyBuyAI from '../pages/EasyBuyAI';
 import SellerDashboard from '../pages/SellerDashboard';
 import CreateProduct from '../pages/CreateProduct';
+import PageNotFound from '../pages/PageNotFound';
+
 
 const MainRoutes = () => {
   return (
     <Routes>
+    {/* jab bhi Link  se dusre page pr jaege toh top pr hi aege scroll krke upper jane ki jrurt nahi   */}
+      
       {/* --- PUBLIC ROUTES (Sabke liye open) --- */}
       <Route path="/" element={<Home />} />
       <Route path="/product/:id" element={<ProductDetails />} />
@@ -40,7 +44,7 @@ const MainRoutes = () => {
       </Route>
 
       {/* 404 Page (Optional) */}
-      <Route path="*" element={<div className="text-center mt-20">404 - Page Not Found</div>} />
+      <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
 };

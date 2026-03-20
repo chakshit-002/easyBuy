@@ -247,8 +247,8 @@ const Checkout = () => {
                   <span className={shipping === 0 ? "text-green-500" : "text-gray-900"}>{shipping === 0 ? "FREE" : `₹${shipping}`}</span>
                 </div>
                 <div className="flex justify-between items-end pt-6">
-                  <span className="text-[10px] font-black text-gray-300 uppercase tracking-[0.2em]">Payable Amount</span>
-                  <span className="text-4xl font-black text-blue-600 tracking-tighter">₹{total.toLocaleString()}</span>
+                  <span className="text-[10px] w-1/2 sm:w-full font-black text-gray-300 uppercase tracking-[0.2em]">Payable Amount</span>
+                  <span className="text-xl sm:text-4xl font-black text-blue-600 tracking-tighter">₹{total.toLocaleString()}</span>
                 </div>
               </div>
 

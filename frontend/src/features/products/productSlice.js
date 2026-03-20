@@ -28,10 +28,24 @@ export const fetchProductById = createAsyncThunk(
     }
 );
 
+// features/productSlice.js
+export const fetchProducts = createAsyncThunk(
+    'product/fetchProducts',
+    async ({ limit = 20, q = '' }, thunkAPI) => {
+        try {
+            const response = await productAPI.get('/', { params: { limit, q } }); // Tumhara axios instance
+            return response.data;
+        } catch (error) {
+            return thunkAPI.rejectWithValue(error.response.data);
+        }
+    }
+);
+
 const productSlice = createSlice({
     name: 'products',
     initialState: {
         items: [],
+        selectedProduct: null, // Single product detail ke liye
         total: 0,
         loading: false,
         error: null
@@ -71,6 +85,21 @@ const productSlice = createSlice({
             .addCase(fetchProductById.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
+            })
+            .addCase(fetchProducts.pending, (state) => {
+                state.loading = true;
+                state.error = null;
+            })
+            .addCase(fetchProducts.fulfilled, (state, action) => {
+                state.loading = false;
+                // Galti yahan thi: state.products nahi, state.items use karo
+                state.items = action.payload.data || [];
+                state.total = action.payload.total || 0;
+                state.hasMore = action.payload.hasMore || false;
+            })
+            .addCase(fetchProducts.rejected, (state, action) => {
+                state.loading = false;
+                state.error = action.payload?.message || "Something went wrong while fetching products";
             });
     }
 });

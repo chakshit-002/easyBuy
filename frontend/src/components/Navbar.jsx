@@ -115,49 +115,62 @@ const Navbar = () => {
                 </div>
 
                 {/* MOBILE SLIDER MENU */}
-                {isMobileMenuOpen && (
-                    <div className="lg:hidden fixed inset-0 z-100 animate-in fade-in duration-300">
-                        {/* Overlay (Click to close) */}
-                        <div className="absolute inset-0 bg-black bg-opacity-40" onClick={() => setIsMobileMenuOpen(false)}></div>
+                <div className={`fixed inset-0 z-[100] transition-visibility duration-300 ${isMobileMenuOpen ? 'visible' : 'invisible'}`}>
 
-                        {/* Menu Panel */}
-                        <div className="absolute top-0 right-0 w-[80%] max-w-sm h-full bg-white shadow-xl animate-in slide-in-from-right duration-300 p-6 flex flex-col">
-                            <div className="flex items-center justify-between mb-8">
-                                <div className="text-2xl font-bold text-gray-900"><span className="text-blue-600">e</span>Store</div>
-                                <button className="text-gray-500 p-1" onClick={() => setIsMobileMenuOpen(false)}><X className="h-6 w-6" /></button>
+                    {/* Overlay (Smooth Fade) */}
+                    <div
+                        className={`absolute inset-0 bg-black/30 backdrop-blur-sm transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-100' : 'opacity-0'}`}
+                        onClick={() => setIsMobileMenuOpen(false)}
+                    ></div>
+
+                    {/* Menu Panel (Smooth Slide from Right) */}
+                    <div className={`absolute top-0 right-0 w-[85%] max-w-sm h-full bg-white shadow-2xl transition-transform duration-300 ease-out flex flex-col p-6 ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'}`}>
+
+                        {/* Header inside Menu */}
+                        <div className="flex items-center justify-between mb-8 border-b border-gray-50 pb-4">
+                            <div className="text-2xl font-black italic tracking-tighter text-gray-900">
+                                <span className="text-blue-600">e</span>Store
                             </div>
+                            <button className="text-gray-400 p-2 hover:bg-gray-50 rounded-full transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
+                                <X className="h-6 w-6" />
+                            </button>
+                        </div>
 
-                            {/* Nav Items */}
-                            <div className="flex-1 space-y-3">
-                                {navItems.map((item) => (
-                                    <NavLink key={item.path} to={item.path} className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
-                                        <item.icon className="h-5 w-5" />
-                                        {item.name}
+                        {/* Nav Items (With staggered-like feel via spacing) */}
+                        <div className="flex-1 space-y-2 overflow-y-auto no-scrollbar">
+                            {navItems.map((item) => (
+                                <NavLink
+                                    key={item.path}
+                                    to={item.path}
+                                    className={navLinkClass}
+                                    onClick={() => setIsMobileMenuOpen(false)}
+                                >
+                                    <item.icon className="h-5 w-5" />
+                                    {item.name}
+                                </NavLink>
+                            ))}
+                        </div>
+
+                        {/* Auth Section (Mobile Footer) */}
+                        <div className="border-t border-gray-100 pt-6 mt-6 space-y-3">
+                            {isAuthenticated ? (
+                                <>
+                                    <NavLink to="/profile" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
+                                        <UserCircle className="h-5 w-5" /> Profile Settings
                                     </NavLink>
-                                ))}
-                            </div>
-
-                            {/* Auth Section (Mobile) */}
-                            <div className="border-t border-gray-100 pt-6 mt-6 space-y-3">
-                                {isAuthenticated ? (
-                                    <>
-                                        <NavLink to="/profile" className={navLinkClass} onClick={() => setIsMobileMenuOpen(false)}>
-                                            <UserCircle className="h-5 w-5" /> Profile Settings
-                                        </NavLink>
-                                        <button onClick={handleLogoutClick} className="w-full flex items-center gap-2.5 px-4 py-3 rounded-xl text-sm font-semibold text-red-600 hover:bg-red-50">
-                                            <LogOut className="h-5 w-5" /> Logout
-                                        </button>
-                                    </>
-                                ) : (
-                                    <>
-                                        <button onClick={() => { navigate('/login'); setIsMobileMenuOpen(false); }} className="w-full text-sm font-semibold text-gray-700 py-3 rounded-xl border border-gray-200">Login</button>
-                                        <button onClick={() => { navigate('/register'); setIsMobileMenuOpen(false); }} className="w-full bg-blue-600 text-white text-sm font-semibold py-3 rounded-xl hover:bg-blue-700">Register</button>
-                                    </>
-                                )}
-                            </div>
+                                    <button onClick={handleLogoutClick} className="w-full flex items-center gap-3 px-4 py-4 rounded-2xl text-sm font-bold text-red-600 bg-red-50/50 hover:bg-red-100 transition-colors">
+                                        <LogOut className="h-5 w-5" /> Logout
+                                    </button>
+                                </>
+                            ) : (
+                                <div className="grid grid-cols-2 gap-3">
+                                    <button onClick={() => { navigate('/login'); setIsMobileMenuOpen(false); }} className="text-sm font-bold text-gray-700 py-4 rounded-2xl border-2 border-gray-100 active:scale-95 transition-all">Login</button>
+                                    <button onClick={() => { navigate('/register'); setIsMobileMenuOpen(false); }} className="bg-blue-600 text-white text-sm font-bold py-4 rounded-2xl hover:bg-blue-700 shadow-lg shadow-blue-100 active:scale-95 transition-all">Register</button>
+                                </div>
+                            )}
                         </div>
                     </div>
-                )}
+                </div>
             </nav>
             {/* MODAL COMPONENT */}
             <LogoutModal

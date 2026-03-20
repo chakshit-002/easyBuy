@@ -98,7 +98,7 @@ async function verifyPayment(req, res) {
             paymentId: payment.paymentId,
             amount: payment.price.amount / 100,
             currency: payment.price.currency,
-            fullName: req.user.fullName
+            username: req.user.username
         })
 
         await publishToQueue("PAYMENT_SELLER_DASHBOARD.PAYMENT_UPDATE", payment);
@@ -113,7 +113,7 @@ async function verifyPayment(req, res) {
             email: req.user.email,
             orderId: razorpayOrderId,
             paymentId: paymentId,
-            fullName: req.user.fullName
+             username: req.user.username
         })
         return res.status(500).json({
             message: "Internal  server error"

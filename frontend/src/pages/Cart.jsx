@@ -81,7 +81,7 @@ const Cart = () => {
             </Link>
         </header>
 
-        <div className="flex flex-col lg:flex-row gap-16">
+        <div className="flex flex-col min-[1128px]:flex-row gap-16">
           
           {/* LEFT: ITEM LIST (Occupies 2 parts of the grid) */}
           <div className="flex-[2] space-y-8">
@@ -93,7 +93,7 @@ const Cart = () => {
                 <div key={item._id} className="group relative flex flex-col sm:flex-row items-center gap-8 bg-white p-8 rounded-[2.5rem] border border-gray-100/50 shadow-sm hover:shadow-xl hover:shadow-gray-200/40 transition-all duration-500">
                   
                   {/* Image Container */}
-                  <div className="w-44 h-44 bg-gray-50 rounded-[2rem] overflow-hidden flex-shrink-0 relative">
+                  <div className="w-55 h-55 min-[420px]:w-80 min-[420px]:h-80 sm:w-44 sm:h-44 bg-gray-50 rounded-[2rem] overflow-hidden flex-shrink-0 relative">
                     <img
                       src={product?.images?.[0]?.url || 'https://placehold.co/400'}
                       alt={product?.title}
@@ -106,7 +106,7 @@ const Cart = () => {
                     <div className="flex justify-between items-start">
                         <div>
                             <h3 className="font-bold text-2xl text-gray-900 tracking-tight leading-tight">{product?.title || "Premium Product"}</h3>
-                            <p className="text-gray-400 text-xs mt-2 font-bold uppercase tracking-widest">ID: {item._id.slice(-6)}</p>
+                            <p className="text-gray-400 text-xs mt-2 mb-4  font-bold uppercase tracking-widest">ID: {item._id.slice(-6)}</p>
                         </div>
                         <button 
                             onClick={() => handleRemoveItem(item.productId?._id || item.productId)}
@@ -116,7 +116,7 @@ const Cart = () => {
                         </button>
                     </div>
 
-                    <div className="flex items-center justify-between mt-auto">
+                    <div className="flex flex-col min-[420px]:flex-row items-center justify-between gap-4 mt-auto">
                         {/* Improved Qty Controls */}
                         <div className="flex items-center gap-6 bg-gray-50 px-6 py-3 rounded-full border border-gray-100">
                             <button 
@@ -169,10 +169,10 @@ const Cart = () => {
 
               <div className="pt-8 border-t border-gray-50 flex justify-between items-end mb-12">
                 <span className="text-xs font-black text-gray-400 uppercase tracking-[0.2em]">Final Pay</span>
-                <span className="text-5xl font-black text-blue-600 tracking-tighter leading-none">₹{total.toLocaleString()}</span>
+                <span className="text-2xl min-[430px]:text-5xl font-black text-blue-600 tracking-tighter leading-none">₹{total.toLocaleString()}</span>
               </div>
 
-              <Link to='/checkout' className="w-full cursor-pointer bg-blue-600 text-white py-6 rounded-[2rem] font-black text-xl flex items-center justify-center gap-4 hover:bg-gray-900 transition-all hover:shadow-2xl active:scale-[0.98] group">
+              <Link to='/checkout' className="w-full cursor-pointer bg-blue-600 text-white px-2 py-5 rounded-[2rem] font-black text-sm min-[430px]:text-xl flex items-center justify-center gap-4 hover:bg-gray-900 transition-all hover:shadow-2xl active:scale-[0.98] group">
                 Checkout Now <ArrowRight className="h-6 w-6 group-hover:translate-x-2 transition-transform" />
               </Link>
 

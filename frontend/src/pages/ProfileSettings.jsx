@@ -38,10 +38,10 @@ const ProfileSettings = () => {
 
         {/* Header Section */}
         <div className="flex items-center justify-between mb-12">
-          <h1 className="text-4xl font-black text-gray-900 tracking-tighter italic uppercase">My Account</h1>
+          <h1 className="text-md min-[350px]:text-xl min-[450px]:text-4xl font-black text-gray-900 tracking-tighter italic uppercase">My Account</h1>
           <button
             onClick={() => setShowLogoutModal(true)}
-            className="flex items-center gap-2 bg-red-50 text-red-500 px-6 py-3 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all shadow-sm"
+            className="flex items-center cursor-pointer gap-2 bg-red-50 text-red-500 px-6 py-3 rounded-full font-black text-[10px] uppercase tracking-widest hover:bg-red-500 hover:text-white transition-all shadow-sm"
           >
             <LogOut size={16} /> Logout
           </button>
@@ -51,7 +51,7 @@ const ProfileSettings = () => {
 
           {/* --- LEFT: USER INFO CARD --- */}
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-[3rem] p-10 shadow-2xl shadow-gray-200/50 border border-gray-50 flex flex-col items-center text-center">
+            <div className="bg-white rounded-[3rem] px-4 py-10 min-[450px]:p-10 shadow-2xl shadow-gray-200/50 border border-gray-50 flex flex-col items-center text-center">
               <div className="w-28 h-28 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 flex items-center justify-center text-white text-4xl font-black italic shadow-2xl shadow-blue-200 mb-6 border-8 border-white">
                 {initial.toUpperCase()}
               </div>
@@ -68,7 +68,7 @@ const ProfileSettings = () => {
                   </div>
                   <div>
                     <p className="text-[10px] font-black text-gray-300 uppercase tracking-widest">Email Address</p>
-                    <p className="text-sm font-bold text-gray-700">{user?.email}</p>
+                    <p className="text-xs min-[380px]:text-sm font-bold text-gray-700 break-all">{user?.email}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4 text-left">
@@ -88,9 +88,9 @@ const ProfileSettings = () => {
           <div className="lg:col-span-2 space-y-8">
 
             {/* Address Section */}
-            <div className="bg-white rounded-[3rem] p-8 md:p-10 border border-gray-50 shadow-xl shadow-gray-100/50">
+            <div className="bg-white rounded-[3rem] px-4 py-10  min-[450px]:p-8 md:p-10 border border-gray-50 shadow-xl shadow-gray-100/50">
               <div className="flex justify-between items-center mb-8">
-                <h3 className="text-lg font-black text-gray-900 uppercase tracking-tighter flex items-center gap-2">
+                <h3 className="w-1/2  min-[450px]:w-full text-sm  min-[450px]:text-lg font-black text-gray-900 uppercase tracking-tighter flex items-center gap-2">
                   <MapPin size={20} className="text-blue-600" /> Saved Addresses
                 </h3>
                 <button
