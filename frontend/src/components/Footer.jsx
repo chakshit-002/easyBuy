@@ -14,7 +14,7 @@ const Footer = () => {
                     {/* Section 1: Brand Info */}
                     <div className="space-y-4">
                         <h2 className="text-2xl font-bold text-white tracking-tighter">
-                            MY<span className="text-blue-500">STORE</span>
+                            MY<span className="text-blue-500">easyBuy Store</span>
                         </h2>
                         <p className="text-sm leading-relaxed">
                             Your one-stop destination for premium tech and lifestyle essentials.
@@ -82,7 +82,7 @@ const Footer = () => {
                             </div>
                             <div className="flex items-center space-x-3">
                                 <Mail size={16} className="text-blue-500" />
-                                <span>support@mystore.com</span>
+                                <span>Chakshit@easyBuy.com</span>
                             </div>
                         </div>
                     </div>

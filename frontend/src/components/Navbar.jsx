@@ -57,7 +57,7 @@ const Navbar = () => {
 
                     {/* LOGO */}
                     <div className="text-2xl font-bold text-gray-900 cursor-pointer" onClick={() => navigate('/')}>
-                        <span className="text-blue-600">e</span>Store
+                        <span className="text-blue-600">easy</span>Buy
                     </div>
 
                     {/* DESKTOP NAV ITEMS */}
@@ -129,7 +129,7 @@ const Navbar = () => {
                         {/* Header inside Menu */}
                         <div className="flex items-center justify-between mb-8 border-b border-gray-50 pb-4">
                             <div className="text-2xl font-black italic tracking-tighter text-gray-900">
-                                <span className="text-blue-600">e</span>Store
+                                <span className="text-blue-600">easy</span>Buy
                             </div>
                             <button className="text-gray-400 p-2 hover:bg-gray-50 rounded-full transition-colors" onClick={() => setIsMobileMenuOpen(false)}>
                                 <X className="h-6 w-6" />

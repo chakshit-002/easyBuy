@@ -1,15 +1,26 @@
 import axios from 'axios';
 
 // Base URLs for different services
+// const SERVICES = {
+//     AUTH: 'http://localhost:3000/api/auth',
+//     PRODUCT: 'http://localhost:3001/api/products',
+//     CART: 'http://localhost:3002/api/cart',
+//     ORDER: 'http://localhost:3003/api/orders',
+//     PAYMENT: 'http://localhost:3004/api/payments',
+//     AI: 'http://localhost:3005/',
+//     SELLER: 'http://localhost:3007/api/seller/dashboard',
+//     // NOTIFICATION: 'http://localhost:3006/',
+// };
+
 const SERVICES = {
-    AUTH: 'http://localhost:3000/api/auth',
-    PRODUCT: 'http://localhost:3001/api/products',
-    CART: 'http://localhost:3002/api/cart',
-    ORDER: 'http://localhost:3003/api/orders',
-    PAYMENT: 'http://localhost:3004/api/payments',
-    AI: 'http://localhost:3005/',
+    AUTH: import.meta.env.VITE_AUTH_API_URL,
+    PRODUCT: import.meta.env.VITE_PRODUCT_API_URL,
+    CART: import.meta.env.VITE_CART_API_URL,
+    ORDER: import.meta.env.VITE_ORDER_API_URL,
+    PAYMENT: import.meta.env.VITE_PAYMENT_API_URL,
+    AI: import.meta.env.VITE_AI_BUDDY_API_URL,
+    SELLER: import.meta.env.VITE_SELLER_DASHBOARD_API_URL,
     // NOTIFICATION: 'http://localhost:3006/',
-    SELLER: 'http://localhost:3007/api/seller/dashboard',
 };
 
 // Generic API Creator function
