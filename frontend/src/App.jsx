@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { loadUser } from './features/auth/authSlice';
-import MainRoutes from './Routes/Mainroutes';
+import MainRoutes from './Routes/MainRoutes';
 import Navbar from './components/Navbar';
 import ScrollToTop from './components/ScrollToTop';
 import Footer from './components/Footer';
