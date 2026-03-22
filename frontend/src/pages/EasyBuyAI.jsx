@@ -5,7 +5,7 @@ import { addMessage, setAiTyping } from '../features/chat/chatSlice';
 import { io } from 'socket.io-client';
 import toast from 'react-hot-toast';
 
-const SOCKET_URL = 'http://localhost:3005'; // Backend port check kar lena 3005 hi hai na?
+const SOCKET_URL = import.meta.env.VITE_AI_BUDDY_URL || 'http://localhost:3005'; // 
 
 const EasyBuyAI = () => {
     const dispatch = useDispatch();
