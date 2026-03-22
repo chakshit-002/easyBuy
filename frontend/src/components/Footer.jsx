@@ -14,7 +14,7 @@ const Footer = () => {
                     {/* Section 1: Brand Info */}
                     <div className="space-y-4">
                         <h2 className="text-2xl font-bold text-white tracking-tighter">
-                            MY<span className="text-blue-500">easyBuy Store</span>
+                            MY <span className="text-blue-500">easy</span>Buy Store
                         </h2>
                         <p className="text-sm leading-relaxed">
                             Your one-stop destination for premium tech and lifestyle essentials.
@@ -92,7 +92,7 @@ const Footer = () => {
                 {/* Divider */}
                 <div className="border-t border-gray-800 pt-8 mt-8 flex flex-col md:flex-row justify-between items-center gap-4">
                     <p className="text-xs text-gray-500 text-center md:text-left">
-                        © {new Date().getFullYear()} MyStore Inc. All rights reserved. Made with ❤️ for tech lovers.
+                        © {new Date().getFullYear()} My easyBuy Store Inc. All rights reserved. Made with ❤️ for tech lovers.
                     </p>
 
                     {/* Payment Partners (Text/Small Icons) */}

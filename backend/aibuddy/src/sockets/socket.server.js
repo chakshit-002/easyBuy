@@ -2,12 +2,17 @@ const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 const cookie = require('cookie');
 const agent = require('../agent/agent');
+const allowedOrigins = [
 
+    "http://localhost:5173",
+    "https://easybuy-store.netlify.app/"
+
+]
 async function initSocketServer(httpServer) {
     const io = new Server(httpServer, {
         // path: '/api/socket/socket.io/'
         cors: {
-            origin: "http://localhost:5173", // frontend ka URL
+            origin: allowedOrigins, // frontend ka URL
             methods: ["GET", "POST"],
             credentials: true
         },

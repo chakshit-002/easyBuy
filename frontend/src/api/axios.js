@@ -13,13 +13,13 @@ import axios from 'axios';
 // };
 
 const SERVICES = {
-    AUTH: import.meta.env.VITE_AUTH_API_URL,
-    PRODUCT: import.meta.env.VITE_PRODUCT_API_URL,
-    CART: import.meta.env.VITE_CART_API_URL,
-    ORDER: import.meta.env.VITE_ORDER_API_URL,
-    PAYMENT: import.meta.env.VITE_PAYMENT_API_URL,
-    AI: import.meta.env.VITE_AI_BUDDY_API_URL,
-    SELLER: import.meta.env.VITE_SELLER_DASHBOARD_API_URL,
+    AUTH: import.meta.env.VITE_AUTH_API_URL ||  'http://localhost:3000/api/auth' ,
+    PRODUCT: import.meta.env.VITE_PRODUCT_API_URL || 'http://localhost:3001/api/products',
+    CART: import.meta.env.VITE_CART_API_URL || 'http://localhost:3002/api/cart',
+    ORDER: import.meta.env.VITE_ORDER_API_URL || 'http://localhost:3003/api/orders',
+    PAYMENT: import.meta.env.VITE_PAYMENT_API_URL || 'http://localhost:3004/api/payments',
+    AI: import.meta.env.VITE_AI_BUDDY_API_URL || 'http://localhost:3005/',
+    SELLER: import.meta.env.VITE_SELLER_DASHBOARD_API_URL || 'http://localhost:3007/api/seller/dashboard',
     // NOTIFICATION: 'http://localhost:3006/',
 };
 

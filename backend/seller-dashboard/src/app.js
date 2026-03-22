@@ -4,13 +4,19 @@ const sellerRoutes =  require("./routes/seller.routes")
 const  cors = require('cors');
 
 const app = express();
+const allowedOrigins = [
+
+    "http://localhost:5173",
+    "https://easybuy-store.netlify.app/"
+
+];
 
 app.use(express.json())
 app.use(cookieParser())
 
 //  Backend Service mein 
 app.use(cors({
-    origin: 'http://localhost:5173',// React URL
+    origin: allowedOrigins,
     credentials: true
 }));
 

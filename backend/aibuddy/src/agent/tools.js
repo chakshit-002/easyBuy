@@ -2,13 +2,16 @@ const { tool } = require('@langchain/core/tools');
 const { z } = require("zod");
 const axios = require('axios');
 
+const BASE_URL_1 = process.env.NODE_ENV === "production" ? "https://easybuy-product.onrender.com" : "http://localhost:3001"
+const BASE_URL_2 = process.env.NODE_ENV === "production" ? "https://easybuy-cart.onrender.com" : "http://localhost:3002"
+
 // 1. Search Product Tool
 const searchProduct = tool(
     async ({ query }, config) => { // Token yahan config se aayega, AI se nahi
         try {
             const token = config.metadata.token; // Agent metadata se token nikalna
             
-            const response = await axios.get(`http://localhost:3001/api/products?q=${query}`, {
+            const response = await axios.get(`${BASE_URL_1}/api/products?q=${query}`, {
                 headers: { Authorization: `Bearer ${token}` },
                 timeout: 5000 // 5 seconds timeout taaki tool hang na ho
             });
@@ -39,7 +42,7 @@ const addProductToCart = tool(
         try {
             const token = config.metadata.token;
 
-            const response = await axios.post(`http://localhost:3002/api/cart/items`, 
+            const response = await axios.post(`${BASE_URL_2}/api/cart/items`, 
                 { productId, qty }, 
                 { headers: { Authorization: `Bearer ${token}` } }
             );

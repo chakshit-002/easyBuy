@@ -250,8 +250,6 @@ async function getProductsByIds(req, res) {
 }
 
 
-// product.controller.js
-
 // Ye function tab kaam aayega jab hume check karna ho ki stock hai ya nahi
 async function checkAndReduceStock(items) {
     const session = await mongoose.startSession();
