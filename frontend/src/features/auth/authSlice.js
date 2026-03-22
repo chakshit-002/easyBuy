@@ -78,13 +78,17 @@ const authSlice = createSlice({
             })
             .addCase(registerUser.fulfilled, (state, action) => {
                 state.loading = false;
-                state.isAuthenticated = true; // Taaki navigate trigger ho jaye
-
+                state.isAuthenticated = true; // Register ke baad agar auto-login hai toh
                 state.error = null;
-                state.user = action.payload.user || action.payload;
 
-                localStorage.setItem('user', JSON.stringify(state.user));
+                // Backend se payload mein { message, user, token } aana chahiye
+                const userData = action.payload.user ? {
+                    ...action.payload.user,
+                    token: action.payload.token // <--- Register wala token bhi yahan save ho gaya
+                } : action.payload;
 
+                state.user = userData;
+                localStorage.setItem('user', JSON.stringify(userData));
             })
             .addCase(registerUser.rejected, (state, action) => {
                 state.loading = false;
@@ -95,15 +99,19 @@ const authSlice = createSlice({
                 state.error = null;
             })
             .addCase(loginUser.fulfilled, (state, action) => {
-
                 state.loading = false;
                 state.isAuthenticated = true;
                 state.error = null;
-                // Sirf user data save karo, token nahi
-                state.user = action.payload.user || action.payload;
 
-                localStorage.setItem('user', JSON.stringify(state.user));
+                // Backend se payload mein { message, user, token } aa raha hai
+                // Hum token ko user object ke andar ghusa dete hain storage ke liye
+                const userData = action.payload.user ? {
+                    ...action.payload.user,
+                    token: action.payload.token // <--- Token yahan save ho gaya
+                } : action.payload;
 
+                state.user = userData;
+                localStorage.setItem('user', JSON.stringify(userData));
             })
             .addCase(loginUser.rejected, (state, action) => {
                 state.loading = false;
@@ -115,11 +123,14 @@ const authSlice = createSlice({
                 state.loading = true;
             })
             .addCase(loadUser.fulfilled, (state, action) => {
-                console.log("BACKEND SE KYA AAYA:", action.payload);
                 state.loading = false;
                 state.isAuthenticated = true;
-                state.user = action.payload.user || action.payload;
 
+                // Agar loadUser ( /me ) token nahi bhejta, toh purana token retain karo
+                const currentToken = state.user?.token;
+                const newUser = action.payload.user || action.payload;
+
+                state.user = { ...newUser, token: currentToken };
                 localStorage.setItem('user', JSON.stringify(state.user));
             })
             .addCase(loadUser.rejected, (state) => {

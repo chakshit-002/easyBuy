@@ -31,6 +31,7 @@ const createAPI = (baseURL) => {
     });
 };
 
+
 // Export individual service instances
 export const authAPI = createAPI(SERVICES.AUTH);
 export const productAPI = createAPI(SERVICES.PRODUCT);
@@ -39,6 +40,32 @@ export const orderAPI = createAPI(SERVICES.ORDER);
 export const paymentAPI = createAPI(SERVICES.PAYMENT);
 export const aiAPI = createAPI(SERVICES.AI);
 export const sellerAPI = createAPI(SERVICES.SELLER);
+
+
+
+
+
+const apiInstances = [authAPI, productAPI, cartAPI, orderAPI, paymentAPI, aiAPI, sellerAPI];
+
+apiInstances.forEach((instance) => {
+    instance.interceptors.request.use(
+        (config) => {
+            // LocalStorage se user nikalna (Kyuki tumne slice mein wahan save kiya hai)
+            const user = JSON.parse(localStorage.getItem('user'));
+            
+            // Agar tumne token user object ke andar bheja hai backend se:
+            if (user && user.token) {
+                config.headers.Authorization = `Bearer ${user.token}`;
+            }
+            return config;
+        },
+        (error) => {
+            return Promise.reject(error);
+        }
+    );
+});
+
+
 
 // Default export (optional, maybe points to Auth or Gateway)
 export default authAPI;
