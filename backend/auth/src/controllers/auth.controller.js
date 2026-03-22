@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const redis = require('../db/redis')
 const { publishToQueue } = require('../broker/broker')
 
-
+// sameSite:'none' -> different domain on production of frontend and backend
 async function registerUser(req, res) {
     try {
         const { username, email, password, fullName: { firstName, lastName }, role } = req.body
@@ -71,7 +71,8 @@ async function registerUser(req, res) {
         res.cookie('token', token, {
             httpOnly: true,
             secure: true, // client side js hoti hai vo cookies ko access nahi kr paegi only server hi kr skta hai .....
-            maxAge: 24 * 60 * 60 * 1000 //1 day
+            maxAge: 24 * 60 * 60 * 1000, //1 day,
+            sameSite: 'none'
         })
 
         res.status(201).json({
@@ -125,6 +126,7 @@ async function loginUser(req, res) {
             httpOnly: true,
             secure: true,
             maxAge: 24 * 60 * 60 * 1000,
+            sameSite: 'none'
         });
 
         return res.status(200).json({
@@ -165,6 +167,7 @@ async function logoutUser(req, res) {
     res.clearCookie('token', {
         httpOnly: true,
         secure: true,
+        sameSite:'none'
     })
     return res.status(200).json({
         message: "Logged Out Successfully"
