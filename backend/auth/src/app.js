@@ -7,7 +7,7 @@ const cors = require('cors');
 const allowedOrigins = [
 
     "http://localhost:5173",
-    "https://easybuy-store.netlify.app/"
+    "https://easybuy-store.netlify.app"
 
 ];
 

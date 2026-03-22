@@ -5,7 +5,7 @@ const agent = require('../agent/agent');
 const allowedOrigins = [
 
     "http://localhost:5173",
-    "https://easybuy-store.netlify.app/"
+    "https://easybuy-store.netlify.app"
 
 ]
 async function initSocketServer(httpServer) {
