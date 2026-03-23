@@ -5,6 +5,7 @@ const SERVICE_URLS = [
     import.meta.env.VITE_ORDER_API_URL || 'http://localhost:3003',
     import.meta.env.VITE_PAYMENT_API_URL || 'http://localhost:3004',
     import.meta.env.VITE_AI_BUDDY_API_URL || 'http://localhost:3005',
+    import.meta.env.VITE_NOTIFICATION_API_URL || 'http://localhost:3006',
     import.meta.env.VITE_SELLER_DASHBOARD_API_URL || 'http://localhost:3007'
 ];
 
