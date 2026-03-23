@@ -95,7 +95,7 @@ const EasyBuyAI = () => {
                             <h2 className="text-2xl font-black text-gray-900 tracking-tighter uppercase italic">EasyBuy AI</h2>
                             <p className="text-gray-400 text-[10px] font-black uppercase tracking-widest mt-2">Personal Shopping Agent</p>
                             <p className="text-gray-500 text-sm mt-6 leading-relaxed">
-                                I can find products, track orders, and even add items to your cart. Just ask!
+                                I can find products and even add items to your cart. Just ask!
                             </p>
                         </div>
                     </div>

@@ -66,13 +66,13 @@ const Checkout = () => {
         key: import.meta.env.VITE_RAZORPAY_KEY_ID,
         amount: payment.price.amount,
         currency: payment.price.currency,
-        name: "Gemini Store",
+        name: "easyBuy Store",
         description: "Premium Purchase",
         order_id: payment.razorpayOrderId,
         handler: async (response) => {
           const verifyToast = toast.loading("Verifying Transaction...");
           try {
-            const verifyRes = await axios.post(`http://localhost:3004/api/payments/verify`, {
+            const verifyRes = await paymentAPI.post(`/verify`, {
               razorpayOrderId: response.razorpay_order_id,
               paymentId: response.razorpay_payment_id,
               signature: response.razorpay_signature
