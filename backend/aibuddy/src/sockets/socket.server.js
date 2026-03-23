@@ -22,8 +22,13 @@ async function initSocketServer(httpServer) {
     // Middleware: Auth check
     io.use((socket, next) => {
         try {
-            const cookies = socket.handshake.headers?.cookie;
-            const { token } = cookies ? cookie.parse(cookies) : {};
+            // const cookies = socket.handshake.headers?.cookie;
+            // const { token } = cookies ? cookie.parse(cookies) : {};
+
+            // Priority: Handshake Auth > Headers > Cookies
+            const token = socket.handshake.auth?.token ||
+                socket.handshake.headers?.authorization?.split(' ')[1] ||
+                cookie.parse(socket.handshake.headers?.cookie || '').token;
 
             if (!token) return next(new Error("Authentication error: No token"));
 
