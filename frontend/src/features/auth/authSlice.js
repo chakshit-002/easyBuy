@@ -165,10 +165,10 @@ const authSlice = createSlice({
     }
 });
 
-export const { logout } = authSlice.actions;
 export default authSlice.reducer;
 
 
+// export const { logout } = authSlice.actions;
 //  reducers: {
 //         logout: (state) => {
 //             state.user = null;

@@ -42,9 +42,6 @@ export const aiAPI = createAPI(SERVICES.AI);
 export const sellerAPI = createAPI(SERVICES.SELLER);
 
 
-
-
-
 const apiInstances = [authAPI, productAPI, cartAPI, orderAPI, paymentAPI, aiAPI, sellerAPI];
 
 apiInstances.forEach((instance) => {

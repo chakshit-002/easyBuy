@@ -116,9 +116,9 @@ async function createOrder(req, res) {
             }
         })
         // 1. Seller Dashboard sync (Revenue/Sales ke liye)
-        await publishToQueue("ORDER_SELLER_DASHBOARD.ORDER_CREATED", order)
+        // await publishToQueue("ORDER_SELLER_DASHBOARD.ORDER_CREATED", order)
         // 2. YE ADD isliye kiya  kyu ki Product Service sync (Stock kam karne ke liye)
-        await publishToQueue("ORDER_PRODUCT_SERVICE.ORDER_CREATED", order);
+        // await publishToQueue("ORDER_PRODUCT_SERVICE.ORDER_CREATED", order);
 
         await Promise.all([
             // 1. Seller Dashboard sync (Revenue/Sales ke liye)

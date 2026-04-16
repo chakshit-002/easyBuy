@@ -34,6 +34,7 @@ async function getCart(req, res) {
                 _id: cartItem._id,
                 quantity: cartItem.quantity,
                 productId: productInfo || { _id: cartItem.productId, title: "Product Not Found", price: { amount: 0 } }
+                //maan loh seller ne delete kr diya pr kisi user  ke cart mei hai toh app crash se bachne ke liye likha hai.... || ke baad vala
             };
         });
 

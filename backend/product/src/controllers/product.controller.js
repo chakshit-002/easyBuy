@@ -249,7 +249,7 @@ async function getProductsByIds(req, res) {
     }
 }
 
-
+// Jab koi user "Checkout" ya "Order" karta hai, tab ye function check karta hai ki dukan mein maal (Stock)
 // Ye function tab kaam aayega jab hume check karna ho ki stock hai ya nahi
 async function checkAndReduceStock(items) {
     const session = await mongoose.startSession();

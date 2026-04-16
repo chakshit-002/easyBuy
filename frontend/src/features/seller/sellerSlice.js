@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 import { sellerAPI, productAPI } from '../../api/axios';
+import { logoutUser } from '../auth/authSlice';
 
 // 1. Thunk to fetch Metrics
 export const fetchSellerMetrics = createAsyncThunk(
@@ -64,14 +65,14 @@ const sellerSlice = createSlice({
         createLoading: false,
         error: null
     },
-    reducers: {
-        clearSellerState: (state) => {
-            state.metrics = null;
-            state.myProducts = [];
-            state.myOrders = [];
-            state.error = null;
-        }
-    },
+    // reducers: {
+    //     clearSellerState: (state) => {
+    //         state.metrics = null;
+    //         state.myProducts = [];
+    //         state.myOrders = [];
+    //         state.error = null;
+    //     }
+    // },
     extraReducers: (builder) => {
         builder
             // Metrics Handlers
@@ -115,13 +116,21 @@ const sellerSlice = createSlice({
             .addCase(fetchSellerOrders.rejected, (state, action) => {
                 state.loading = false;
                 state.error = action.payload;
-            });
+            })
+           .addCase(logoutUser.fulfilled, (state) => {
+            state.metrics = null;
+            state.myProducts = [];
+            state.myOrders = [];
+            state.error = null;
+            console.log("Seller state cleared because user logged out!");
+            // yh likh lliya hai clearSellerState ki jagah nahi toh wahan pr jahan jahan logout hota wahan isko dispatch krna pdtha 
+        });
     }
 });
 
 
 // ACTIONS EXPORT
-export const { clearSellerState } = sellerSlice.actions;
+// export const { clearSellerState } = sellerSlice.actions;
 
 // REDUCER EXPORT (Ye line miss ho rahi thi tumse)
 export default sellerSlice.reducer;
